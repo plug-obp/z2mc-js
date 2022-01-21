@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "dependencies": {
     "lodash": "^4.17.21",
     "object-hash": "^2.2.0"

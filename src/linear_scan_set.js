@@ -1,5 +1,3 @@
-var _ = require('lodash');
-var hash = require('object-hash');
 
 function LinearScanHashSet(capacity, hashFunction, hashSeed, equalityFunction) {
     this.m_capacity         = capacity;                     // The capacity of the underlying container
@@ -18,8 +16,8 @@ const LinearScanHashSetPrototype = {
     },
 
     toString() {
-        repr = "capacity=" + this.m_capacity + ", size=" + this.m_size + " items=["
-        for (i = 0; i<this.m_capacity; i++) {
+        let repr = "capacity=" + this.m_capacity + ", size=" + this.m_size + " items=["
+        for (let i = 0; i<this.m_capacity; i++) {
             if (i!=0) {
                 repr += ", ";
             }
@@ -39,8 +37,8 @@ const LinearScanHashSetPrototype = {
             this.grow()
         }
 
-        theHash = this.m_hashFunction(element, this.m_hashSeed);
-        theIndex  = theHash % this.m_capacity;
+        let theHash = this.m_hashFunction(element, this.m_hashSeed);
+        let theIndex  = theHash % this.m_capacity;
 
         //check for empty slot at index
         if (this.m_items[theIndex] == null) {
@@ -55,7 +53,7 @@ const LinearScanHashSetPrototype = {
         }
 
         //not found start linear probing
-        start = theIndex;
+        let start = theIndex;
         do {
             theIndex = (theIndex + 1) % this.m_capacity;
         } while (
@@ -81,8 +79,8 @@ const LinearScanHashSetPrototype = {
     },
 
     contains(element) {
-        theHash = this.m_hashFunction(element, this.m_hashSeed);
-        theIndex  = theHash % this.m_capacity;
+        let theHash = this.m_hashFunction(element, this.m_hashSeed);
+        let theIndex  = theHash % this.m_capacity;
 
         //check for empty slot at index
         if (this.m_items[theIndex] == null) {
@@ -95,7 +93,7 @@ const LinearScanHashSetPrototype = {
         }
 
         //not found start linear probing
-        start = theIndex;
+        let start = theIndex;
         do {
             theIndex = (theIndex + 1) % this.m_capacity;
         } while (
@@ -112,12 +110,11 @@ const LinearScanHashSetPrototype = {
     },
 
     grow() {
-        console.log("wants to grow")
-        newCapacity = this.m_capacity * this.m_growthFactor;
-        newArray = new Array(newCapacity);
+        let newCapacity = this.m_capacity * this.m_growthFactor;
+        let newArray = new Array(newCapacity);
         //copy and rehash the elements
-        for (i = 0; i<this.m_capacity; i++) {
-            element = this.m_items[i];
+        for (let i = 0; i<this.m_capacity; i++) {
+            let element = this.m_items[i];
             if (element == null) continue;
             this.internalAddRehash(newArray, element, this.m_hashFunction(element, this.m_hashSeed));
         }
@@ -127,8 +124,8 @@ const LinearScanHashSetPrototype = {
 
     //does not check for duplicates, does not change the size
     internalAddRehash(array, element, hash) {
-        theCapacity = array.length;
-        theIndex = hash % theCapacity;
+        let theCapacity = array.length;
+        let theIndex = hash % theCapacity;
         //check for empty slot at index
         if (array[theIndex] == null) {
             array[theIndex] = element;
@@ -136,7 +133,7 @@ const LinearScanHashSetPrototype = {
         }
 
         //not found start linear probing
-        start = theIndex;
+        let start = theIndex;
         do {
             theIndex = (theIndex + 1) % theCapacity;
         } while (
@@ -159,54 +156,4 @@ const LinearScanHashSetPrototype = {
 LinearScanHashSet.prototype             = LinearScanHashSetPrototype;
 LinearScanHashSet.prototype.constructor = LinearScanHashSet;
 
-theSet = new LinearScanHashSet(5, null, null, null)
-theSet.add(1)
-theSet.add(2)
-theSet.add(1)
-theSet.add([1, 2])
-theSet.add([1, 2])
-x = [2, 3]
-theSet.add(x)
-theSet.add(x)
-theSet.add({x:2})
-console.log(`The set:${theSet}`)
-console.log(`The size is : ${theSet.size()} contains [1,2]: ${theSet.contains([1,2])}`)
-
-console.log(`---------------------------------------------------------`)
-
-dirtyHash = (e, seed) => {return Number(BigInt.asUintN(32, BigInt("0x"+hash(e))));}
-theSet = new LinearScanHashSet(5, dirtyHash, null, _.isEqual)
-
-console.log(`The set:${theSet}`)
-
-theSet.add(1)
-theSet.add(2)
-theSet.add(1)
-theSet.add([1, 2])
-theSet.add([1, 2])
-x = [2, 3]
-theSet.add(x)
-theSet.add(x)
-theSet.add({x:2})
-console.log(`The set:${theSet}`)
-console.log(`The size is : ${theSet.size()} contains [1,2]: ${theSet.contains([1,2])}`)
-
-
-console.log(`---------------------------------------------------------`)
-
-
-theSet = new Set()
-theSet.add(1)
-theSet.add(2)
-theSet.add(1)
-theSet.add([1, 2])
-theSet.add([1, 2])
-x = [2, 3]
-theSet.add(x)
-theSet.add(x)
-theSet.add({x:2})
-console.log(theSet)
-console.log(`The size is : ${theSet.size} contains [1,2]: ${theSet.has([1,2])}`)
-
-
-// console.log(`The size is : ${theSet.grow()}`)
+export {LinearScanHashSet}
