@@ -1,35 +1,18 @@
 var _ = require('lodash');
+var hash = require('object-hash');
 
-const LinearScanHashSet = {
-    // The capacity of the underlying container
-    m_capacity: 1000,
-    // The hash function which will be used
-    m_hashFunction: (e, seed) => { return 1; },
-    // The seed of the hash function
-    m_hashSeed: 0,
-    // The equality test function, by default identity test
-    m_equalsFunction: (a, b) => { return a === b},
-    // The maximum load factor, when this load factor is reached the m_items will grow by m_growthFactor
-    m_maxLoadFactor: 0.667,
-    // The growth factor
-    m_growthFactor: 2,
-    // The underlying container, the elements are stored inside
-    m_items: null,
-    // The number of items currently in the set
-    m_size: 0,
+function LinearScanHashSet(capacity, hashFunction, hashSeed, equalityFunction) {
+    this.m_capacity         = capacity;                     // The capacity of the underlying container
+    this.m_hashFunction     = hashFunction === null ? (e, seed) => { return 1; } : hashFunction;   // The hash function which will be used
+    this.m_hashSeed         = hashSeed;                     // The seed of the hash function
+    this.m_equalsFunction   = equalityFunction == null ? (a, b) => { return a === b} : equalityFunction;  // The equality test function, by default identity test
+    this.m_maxLoadFactor    = 0.667;                        // The maximum load factor, when this load factor is reached the m_items will grow by m_growthFactor
+    this.m_growthFactor     = 2;                            // The growth factor
+    this.m_items            = new Array(capacity);                         // The underlying container, the elements are stored inside
+    this.m_size             = 0;                            // The number of items currently in the set
+}
 
-    create(capacity, hashFunction, hashSeed, equalityFunction) {
-        this.m_capacity     = capacity;
-        this.m_hashFunction = hashFunction === null ? this.m_hashFunction : hashFunction;
-        this.m_hashSeed     = hashSeed === null ? this.m_hashSeed : hashSeed;
-        this.m_equalsFunction = equalityFunction === null ? this.m_equalsFunction : equalityFunction;
-        this.m_maxLoadFactor= 0.5;//0.667;
-        this.m_growthFactor = 2;
-        this.m_items        = new Array(capacity);
-        this.m_size         = 0;
-        return this;
-    },
-
+const LinearScanHashSetPrototype = {
     size() {
         return this.m_size;
     },
@@ -173,7 +156,10 @@ const LinearScanHashSet = {
     },
 }
 
-theSet = LinearScanHashSet.create(5, null, null, null)
+LinearScanHashSet.prototype             = LinearScanHashSetPrototype;
+LinearScanHashSet.prototype.constructor = LinearScanHashSet;
+
+theSet = new LinearScanHashSet(5, null, null, null)
 theSet.add(1)
 theSet.add(2)
 theSet.add(1)
@@ -182,11 +168,14 @@ theSet.add([1, 2])
 x = [2, 3]
 theSet.add(x)
 theSet.add(x)
-// theSet.add({x:2})
+theSet.add({x:2})
 console.log(`The set:${theSet}`)
 console.log(`The size is : ${theSet.size()} contains [1,2]: ${theSet.contains([1,2])}`)
 
-theSet = LinearScanHashSet.create(5, null, null, _.isEqual)
+console.log(`---------------------------------------------------------`)
+
+dirtyHash = (e, seed) => {return Number(BigInt.asUintN(32, BigInt("0x"+hash(e))));}
+theSet = new LinearScanHashSet(5, dirtyHash, null, _.isEqual)
 
 console.log(`The set:${theSet}`)
 
@@ -198,9 +187,26 @@ theSet.add([1, 2])
 x = [2, 3]
 theSet.add(x)
 theSet.add(x)
+theSet.add({x:2})
 console.log(`The set:${theSet}`)
 console.log(`The size is : ${theSet.size()} contains [1,2]: ${theSet.contains([1,2])}`)
 
+
+console.log(`---------------------------------------------------------`)
+
+
+theSet = new Set()
+theSet.add(1)
+theSet.add(2)
+theSet.add(1)
+theSet.add([1, 2])
+theSet.add([1, 2])
+x = [2, 3]
+theSet.add(x)
+theSet.add(x)
+theSet.add({x:2})
+console.log(theSet)
+console.log(`The size is : ${theSet.size} contains [1,2]: ${theSet.has([1,2])}`)
 
 
 // console.log(`The size is : ${theSet.grow()}`)
