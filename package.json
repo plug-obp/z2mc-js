@@ -1,6 +1,7 @@
 {
   "type": "module",
   "dependencies": {
+    "hash-wasm": "^4.9.0",
     "lodash": "^4.17.21",
     "object-hash": "^2.2.0"
   }

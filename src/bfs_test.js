@@ -3,15 +3,23 @@ import { generic_bfs } from "./generic_bfs.js"
 let g = {
     1: [3, 2],
     2: [3, 4],
-    4: [1, 5]
+    3: [],
+    4: [1, 5],
+    5: []
 }
 
 function on_entry(source, neighbour, canonical_neighbour, layer, accumulator) {
     console.log(
-        `${source}->${neighbour}[${canonical_neighbour}] @ ${layer}`
+        `${source}->${neighbour}[${canonical_neighbour}] @ layer ${layer}`
     );
+    v.size++;
     return false;
 }
-let r = generic_bfs([1], (n) => g[1], on_entry, null, (n, s) => n, null, (a, b) => a === b, null);
+let v = {size: 0};
+let r = generic_bfs([1], (n) => g[n], {on_entry: on_entry, accumulator: v, canonize:(n)=>(-n)});
 
-console.log(r);
+console.log("r="+ JSON.stringify(r));
+
+r = generic_bfs([1], (n) => g[n]);
+
+console.log("r="+ JSON.stringify(r));

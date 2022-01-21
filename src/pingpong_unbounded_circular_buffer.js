@@ -21,7 +21,7 @@ const PingPongCircularBufferPrototype = {
     enqueue:        m_enqueue,
     dequeue:        m_dequeue,
     markLayer()     { this.m_barrier_idx = this.m_write_idx; },
-    layerChanged()  { this.m_read_idx == this.m_barrier_idx; },
+    layerChanged()  { return this.m_read_idx == this.m_barrier_idx; },
     growIfFull:     m_growIfFull,
     toString:       m_toString,
 }

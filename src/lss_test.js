@@ -2,6 +2,7 @@ import lodash from 'lodash';
 const { isEqual } = lodash;
 import hash from 'object-hash';
 
+
 import {LinearScanHashSet} from './linear_scan_set.js'
 
 let theSet = new LinearScanHashSet(5, null, null, null)
@@ -52,4 +53,4 @@ console.log(theSet)
 console.log(`The size is : ${theSet.size} contains [1,2]: ${theSet.has([1,2])}`)
 
 
-// console.log(`The size is : ${theSet.grow()}`)
+

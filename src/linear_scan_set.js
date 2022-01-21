@@ -1,12 +1,14 @@
 
+import xxhash32 from "./typeHasher.js";
+
 function LinearScanHashSet(capacity, hashFunction, hashSeed, equalityFunction) {
     this.m_capacity         = capacity;                     // The capacity of the underlying container
-    this.m_hashFunction     = hashFunction === null ? (e, seed) => { return 1; } : hashFunction;   // The hash function which will be used
+    this.m_hashFunction     = hashFunction === null ? xxhash32 : hashFunction;   // The hash function which will be used
     this.m_hashSeed         = hashSeed;                     // The seed of the hash function
     this.m_equalsFunction   = equalityFunction == null ? (a, b) => { return a === b} : equalityFunction;  // The equality test function, by default identity test
     this.m_maxLoadFactor    = 0.667;                        // The maximum load factor, when this load factor is reached the m_items will grow by m_growthFactor
     this.m_growthFactor     = 2;                            // The growth factor
-    this.m_items            = new Array(capacity);                         // The underlying container, the elements are stored inside
+    this.m_items            = new Array(capacity);          // The underlying container, the elements are stored inside
     this.m_size             = 0;                            // The number of items currently in the set
 }
 
@@ -153,7 +155,25 @@ const LinearScanHashSetPrototype = {
     },
 }
 
+// async function ff() {
+//     return await createXXHash32(482683);
+// }
+// let hasher = await ff();
+
+// function xxhash32_bin(o, seed) {
+//     let data = JSON.stringify(o).normalize();
+//     let hh = hasher;
+//     typeHasher()
+//     hh.init();
+//     hh.update(data);
+//     let r = hh.digest('binary');
+//     return new DataView(r.buffer).getUint32(0, true);
+// }
+
+
+
 LinearScanHashSet.prototype             = LinearScanHashSetPrototype;
 LinearScanHashSet.prototype.constructor = LinearScanHashSet;
 
-export {LinearScanHashSet}
+// export default await hasher; 
+export {LinearScanHashSet};
