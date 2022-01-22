@@ -27,20 +27,22 @@ function dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTr
     function on_node(s,n,cn,l,mem) {
         mem.holds = acceptingPredicate(n);
         mem.witness = mem.holds ? n : null;
+        mem.configuration_count++;
         if (!mem.parents.contains(n)) { mem.parents.add(n, s); }
         return mem.holds;
     }
     let memory = {
         holds:   true,
         witness: null,
+        configuration_count: 0, 
         parents: parentTree
     }            
-    let {holds, witness, parents} = dataless_bfs_traversal(initial, next, on_node, memory, known, frontier, bound, canonize)
+    let {holds, witness, configuration_count, parents} = dataless_bfs_traversal(initial, next, on_node, memory, known, frontier, bound, canonize)
     if (holds) {
         let witnessTrace = getTrace(witness, parents);
         return {verified: false, trace: witnessTrace};
     }
-    return {verified: true, trace: []};
+    return {verified: true, trace: [], configuration_count};
 }
 
 /**
