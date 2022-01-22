@@ -15,7 +15,7 @@ function getTrace(witness, parents) {
     let on_node = (s,n,cn,l,a) => { a.push(n); return false; };
     let o = {
         on_entry: on_node,
-        accumulator: [],
+        memory: [],
     }
 
     let witnessTrace = generic_bfs(initial, next, o);
