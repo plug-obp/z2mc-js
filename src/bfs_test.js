@@ -23,3 +23,15 @@ console.log("r="+ JSON.stringify(r));
 r = generic_bfs([1], (n) => g[n]);
 
 console.log("r="+ JSON.stringify(r));
+
+// let ax = {ax : 3};
+// let cx = {cx : 14};
+// Object.setPrototypeOf(ax, cx);
+
+// function a() { this.xx = 2; }
+// function b() {
+//     this.yy = 3;
+// }
+// b.prototype = a;
+
+// console.log(`${ax.ax}, ${ax.cx}, ${cx.cx}`)
