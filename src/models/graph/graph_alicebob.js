@@ -1,20 +1,22 @@
 export {alicebob0, aliceBob1, aliceBob2, peterson}
 
-let alicebob0 = {
-    model: {
+function alicebob0() {
+    this.ss = {
         0: [1, 2],
         1: [0, 3],
         2: [0, 3],
         3: [1, 2]
-    },
-    initial: [0],
-    aCS : (c) => c === 3,
-    bCS : (c) => c === 3,
-    exclusion: (c) => aCS(c) && bCS(c),
+    };
+    this.initial = [0];
+    this.aCS = (c) => c === 3;
+    this.bCS = (c) => c === 3;
+    this.exclusion = (c) => this.aCS(c) && this.bCS(c);
 }
+// alicebob0.prototype = {}
+// alicebob0.prototype.constructor = alicebob0;
 
 let aliceBob1 = {
-    model: {
+    ss: {
         0: [1, 2], //ii
         1: [4, 5], //iw
         2: [3, 5], //wi
@@ -33,7 +35,7 @@ let aliceBob1 = {
 }
 
 let aliceBob2 = {
-    model: {
+    ss: {
         0: [1, 2], //ii
         1: [4, 5], //iw
         2: [3, 5], //wi
@@ -44,10 +46,10 @@ let aliceBob2 = {
         7: [1, 3]  //cw
     }
 }
-Object.setPrototypeOf(aliceBob1, aliceBob1);
+Object.setPrototypeOf(aliceBob2, aliceBob1);
 
 let peterson = {
-    model: {
+    ss: {
         0: [1, 2], //ii0
         1: [4, 5], //iw
         2: [3, 6], //wi

@@ -1,4 +1,6 @@
 import { dataless_bfs_traversal } from "../algorithms/z_dataless_bfs.js";
+import { LinearScanHashSet } from "../datastructures/linear_scan_set.js";
+import { PingPongCircularBuffer } from "../datastructures/pingpong_unbounded_circular_buffer.js";
 
 export { dataless_predicate_mc }
 
@@ -15,6 +17,7 @@ export { dataless_predicate_mc }
         * @function {*} isEmpty               - a function testing the emptiness : 𝔹
  * @{The parentTree should enables build the tree of parents using add(node, parent)}
         * @function {*} add: C → C → Unit
+        * @function {*} get: C → C
  * @param {*} bound                 - the bound in term of layers ℕ
  * @param {*} canonize              - the canonicalization/abstraction function C → α
  * @returns {(𝔹,Maybe(list C))}     (true, Nothing), (false, Some(list C))
@@ -25,9 +28,9 @@ function dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTr
     let next    = tr.next;
     function on_node(s,n,cn,l,mem) {
         mem.holds = acceptingPredicate(n);
-        mem.witness = a.holds ? n : null;
+        mem.witness = mem.holds ? n : null;
         if (!mem.parents.contains(n)) { mem.parents.add(n, s); }
-        return a.holds;
+        return mem.holds;
     }
     let memory = {
         holds:   true,
@@ -48,15 +51,11 @@ function dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTr
  * @param {LinearScanHashSet} parents, a map with a parent for each node, except the initial
  */
  function getTrace(witness, parents) {
-
-    let initial = [witness];
-    let next = (n) => parents.get(n);
-    let on_node = (s,n,cn,l,a) => { a.push(n); return false; };
-    let o = {
-        on_entry: on_node,
-        memory: [],
+    let trace = [];
+    let parent = witness;
+    while (parent != null) {
+        trace.push(parent);
+        parent = parents.get(parent);
     }
-
-    let witnessTrace = generic_bfs(initial, next, o);
-    return witnessTrace;
+    return trace;
 }
