@@ -1,6 +1,4 @@
 import { dataless_bfs_traversal } from "../algorithms/z_dataless_bfs.js";
-import { LinearScanHashSet } from "../datastructures/linear_scan_set.js";
-import { PingPongCircularBuffer } from "../datastructures/pingpong_unbounded_circular_buffer.js";
 
 export { dataless_predicate_mc }
 
@@ -47,8 +45,11 @@ function dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTr
 
 /**
  * Build a trace from the witness to an initial state.
- * @param {*} witness, the starting node
- * @param {LinearScanHashSet} parents, a map with a parent for each node, except the initial
+ * @param witness, the starting node
+ * @param parents, a map with a parent for each node, except the initial
+ * @{The parentTree should enables build the tree of parents using add(node, parent)}
+    * @function {*} add: C → C → Unit
+    * @function {*} get: C → C
  */
  function getTrace(witness, parents) {
     let trace = [];
