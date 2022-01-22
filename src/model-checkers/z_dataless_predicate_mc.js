@@ -1,4 +1,4 @@
-import { dataless_bfs_traversal } from "./z_dataless_bfs.js";
+import { dataless_bfs_traversal } from "../algorithms/z_dataless_bfs.js";
 
 export { dataless_predicate_mc }
 
@@ -26,7 +26,7 @@ function dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTr
     function on_node(s,n,cn,l,mem) {
         mem.holds = acceptingPredicate(n);
         mem.witness = a.holds ? n : null;
-        mem.parents.add(n, s);
+        if (!mem.parents.contains(n)) { mem.parents.add(n, s); }
         return a.holds;
     }
     let memory = {

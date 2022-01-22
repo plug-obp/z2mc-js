@@ -1,5 +1,5 @@
 import { generic_bfs } from "./generic_bfs.js";
-import { LinearScanHashSet } from "./linear_scan_set";
+import { LinearScanHashSet } from "./datastructures/linear_scan_set";
 
 export { predicateModelChecker }
 

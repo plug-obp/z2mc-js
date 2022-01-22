@@ -1,5 +1,5 @@
-import { LinearScanHashSet } from "./linear_scan_set.js"
-import { PingPongCircularBuffer } from "./pingpong_unbounded_circular_buffer.js"
+import { LinearScanHashSet } from "./datastructures/linear_scan_set.js"
+import { PingPongCircularBuffer } from "./datastructures/pingpong_unbounded_circular_buffer.js"
 
 export { generic_bfs }
 
