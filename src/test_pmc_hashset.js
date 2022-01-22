@@ -110,3 +110,15 @@ console.log("hashcompaction deadlock " + JSON.stringify(result));
 abstraction = (c) => [model.aCS, model.bCS];
 result = hashset_predicate_mc(tr, deadlockPred, (c,s) => c[0]+c[1], 0, (a, b) => a[0] === b[0] && a[1]===b[1], Number.MAX_SAFE_INTEGER, abstraction);
 console.log("predicate under-approximation deadlock " + JSON.stringify(result));
+
+/**
+ * counter
+ */
+
+tr = {
+    initial: [[0,0]],
+    next: (c)=>[[c[0]+1, c[1]], [c[0], c[1]+1]],
+}
+
+result = hashset_predicate_mc(tr, (c)=>c[0]==100&&c[1]==50, (c,s) => c[0]+c[1], 0, (a, b) => a[0] === b[0] && a[1]===b[1], Number.MAX_SAFE_INTEGER, (c)=>c);
+console.log("two counters " + JSON.stringify(result));
