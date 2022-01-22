@@ -1,3 +1,4 @@
+
 export {LinearScanHashSet};
 
 function LinearScanHashSet(capacity, hashFunction, hashSeed, equalityFunction, isMap) {
@@ -194,6 +195,8 @@ const LinearScanHashSetPrototype = {
         }
     },
 }
+
+LinearScanHashSetPrototype.addIfAbsent  = LinearScanHashSetPrototype.add;
 
 LinearScanHashSet.prototype             = LinearScanHashSetPrototype;
 LinearScanHashSet.prototype.constructor = LinearScanHashSet;
