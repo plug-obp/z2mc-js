@@ -1,3 +1,7 @@
+/**
+* adapted to use xxhash32 from 
+* https://github.com/puleos/object-hash/blob/master/index.js 
+ */
 import { createXXHash32 } from "hash-wasm";
 
 export default objectHash;
@@ -26,6 +30,21 @@ function hash(object, options) {
   let hash = new DataView(r.buffer).getUint32(0, true);
   return hash;
 }
+
+// async function ff() {
+//     return await createXXHash32(482683);
+// }
+// let hasher = await ff();
+
+// function xxhash32_bin(o, seed) {
+//     let data = JSON.stringify(o).normalize();
+//     let hh = hasher;
+//     typeHasher()
+//     hh.init();
+//     hh.update(data);
+//     let r = hh.digest('binary');
+//     return new DataView(r.buffer).getUint32(0, true);
+// }
 
 
 function applyDefaults(object, sourceOptions){

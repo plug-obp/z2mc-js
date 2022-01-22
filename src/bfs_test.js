@@ -8,7 +8,7 @@ let g = {
     5: []
 }
 
-function on_entry(source, neighbour, canonical_neighbour, layer, accumulator) {
+function on_entry(source, neighbour, canonical_neighbour, layer, memory) {
     console.log(
         `${source}->${neighbour}[${canonical_neighbour}] @ layer ${layer}`
     );
@@ -16,7 +16,7 @@ function on_entry(source, neighbour, canonical_neighbour, layer, accumulator) {
     return false;
 }
 let v = {size: 0};
-let r = generic_bfs([1], (n) => g[n], {on_entry: on_entry, accumulator: v, canonize:(n)=>(-n)});
+let r = generic_bfs([1], (n) => g[n], {on_entry: on_entry, memory: v, canonize:(n)=>(-n)});
 
 console.log("r="+ JSON.stringify(r));
 
