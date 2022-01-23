@@ -80,17 +80,17 @@ class StateEventAsymmetricSynchronousProductSemantics {
         this.buchi = buchi;
     }
 
-
-    configurationHashFn(configuration) {
+    configurationHashFn (configuration) {
         let { kc, bc } = configuration;
-        seed = this.kripke.configurationHashFn(kc);
-        value = this.buchi.configurationHashFn(bc);
+        let seed = this.kripke.configurationHashFn(kc);
+        let value = this.buchi.configurationHashFn(bc);
         seed ^= value + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         return seed;
-    };
+    }
+
     configurationEqFn(x, y) {
-        let { xkc, xbc } = x;
-        let { ykc, ybc } = y;
+        let { kc:xkc,bc: xbc } = x;
+        let { kc:ykc, bc:ybc } = y;
         return this.kripke.configurationEqFn(xkc, ykc) && this.buchi.configurationEqFn(xbc, ybc);
     };
 
@@ -117,7 +117,7 @@ class StateEventAsymmetricSynchronousProductSemantics {
                 continue;
             }
             for (let kripke_target of kripke_targets) {
-                let kripke_step = { s: kripke_source, a: kripke.action, t: kripke_target };
+                let kripke_step = { s: kripke_source, a: kripke_action, t: kripke_target };
                 getSynchronousActions(this.buchi, kripke_step, buchi_source, synchronous_actions);
             }
         }
@@ -135,6 +135,11 @@ class StateEventAsymmetricSynchronousProductSemantics {
         let { s: s, a: a, t: kripke_target } = kripke_step;
         let buchi_targets = this.buchi.execute(buchi_action, kripke_step, buchi_source);
         return buchi_targets.map((abc) => ({ kc: kripke_target, bc: abc }));
+    }
+
+    isAccepting(configuration) {
+        let { kc, bc } = configuration;
+        return this.kripke.isAccepting(kc) && this.buchi.isAccepting(bc);
     }
 }
 

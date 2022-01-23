@@ -19,6 +19,7 @@ class STR2TR {
     isAccepting(c) {
         return this.operand.isAccepting(c);
     }
+    
     configurationHashFn(c) {
         return this.operand.configurationHashFn(c);
     }

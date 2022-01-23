@@ -40,7 +40,7 @@ function dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTr
     let {holds, witness, configuration_count, parents} = dataless_bfs_traversal(initial, next, on_node, memory, known, frontier, bound, canonize)
     if (holds) {
         let witnessTrace = getTrace(witness, parents);
-        return {verified: false, trace: witnessTrace};
+        return {verified: false, trace: witnessTrace, configuration_count};
     }
     return {verified: true, trace: [], configuration_count};
 }
