@@ -25,6 +25,8 @@ function hashset_predicate_mc_simple(tr, acceptingPredicate, bound) {
     return dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound, canonize);
 }
 
+/*
+
 //TODO: implement a real bloom-filter
 function bloom_predicate_mc(tr, acceptingPredicate, hashFn, bound, canonize) {
 
@@ -56,3 +58,5 @@ function dfa_predicate_mc(tr, acceptingPredicate, configuration_iterator, bound,
     let dfa_canonize = (c) => configuration_iterator(canonize(c))
     return dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound, canonize);
 }
+
+ */
