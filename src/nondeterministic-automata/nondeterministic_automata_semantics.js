@@ -6,7 +6,7 @@ export {NASyntax, NASemantics, DependentNASemantics}
  * @param {*} initial is an array of initial configurations
  * @param {*} delta is a dictionary of fanout with transitions labeled by guards
  * @param {*} accepting is a predicate on configurations defining the accepting configurations (c) => predicate
- * @param {*} isBuchi is a boolean specifying if the NA should be interpreted as a NBA or a NFA 
+ * @param {*} isBuchi is a boolean specifying if the NA should be interpreted as a NBA or a NFA (if NFA only predicate verification is enough)
  */
 class NASyntax {
     constructor(initial, delta, accepting, isBuchi) {

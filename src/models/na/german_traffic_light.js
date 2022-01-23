@@ -1,5 +1,5 @@
 import { NASyntax } from "../../nondeterministic-automata/nondeterministic_automata_semantics.js";
-export {traffic_light_na, traffic_light_observer_false, traffic_light_observer_true, se_traffic_light_observer_false, se_traffic_light_observer_true};
+export {test_true, traffic_light_na, traffic_light_observer_false, traffic_light_observer_true, se_traffic_light_observer_false, se_traffic_light_observer_true};
 
 /**
  * This is an example from "Principles of model-checking" book. Figure 4.6, page 166 (185 in the pdf)
@@ -96,6 +96,18 @@ function se_traffic_light_observer_true() {
         /*qF*/2:[],
         },
         (c) => c === qF,
+        false
+    );
+}
+
+function test_true() {
+    const q0 = 0, q1 = 1, qF = 2;
+    return new NASyntax(
+        [q0],
+        {
+        /*q0*/0:[{guard: (i,c) => { console.log(`i=${JSON.stringify(i)}, ${JSON.stringify(c)}`); return true}, target: q0}]
+        },
+        (c) => false,   //no accepting state
         false
     );
 }
