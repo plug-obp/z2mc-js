@@ -1,10 +1,9 @@
 
 export {LinearScanHashSet};
 
-function LinearScanHashSet(capacity, hashFunction, hashSeed, equalityFunction, isMap) {
+function LinearScanHashSet(capacity, hashFunction, equalityFunction, isMap) {
     this.m_capacity         = capacity;                     // The capacity of the underlying container
     this.m_hashFunction     = hashFunction;   // The hash function which will be used
-    this.m_hashSeed         = hashSeed;                     // The seed of the hash function
     this.m_equalsFunction   = equalityFunction;  // The equality test function, by default identity test
     this.m_maxLoadFactor    = 0.667;                        // The maximum load factor, when this load factor is reached the m_items will grow by m_growthFactor
     this.m_growthFactor     = 2;                            // The growth factor
@@ -40,7 +39,7 @@ const LinearScanHashSetPrototype = {
             this.grow()
         }
 
-        let theHash = this.m_hashFunction(key, this.m_hashSeed);
+        let theHash = this.m_hashFunction(key);
         let theIndex  = theHash % this.m_capacity;
 
         //check for empty slot at index
@@ -89,7 +88,7 @@ const LinearScanHashSetPrototype = {
     },
 
     contains(key) {
-        let theHash = this.m_hashFunction(key, this.m_hashSeed);
+        let theHash = this.m_hashFunction(key);
         let theIndex  = theHash % this.m_capacity;
 
         //check for empty slot at index
@@ -121,7 +120,7 @@ const LinearScanHashSetPrototype = {
     },
 
     get(key) {
-        let theHash = this.m_hashFunction(key, this.m_hashSeed);
+        let theHash = this.m_hashFunction(key);
         let theIndex  = theHash % this.m_capacity;
 
         //check for empty slot at index
@@ -159,7 +158,7 @@ const LinearScanHashSetPrototype = {
         for (let i = 0; i<this.m_capacity; i++) {
             let item = this.m_items[i];
             if (item == null) continue;
-            this.internalAddRehash(newArray, item, this.m_hashFunction(this.m_isMap ? item.key : item, this.m_hashSeed));
+            this.internalAddRehash(newArray, item, this.m_hashFunction(this.m_isMap ? item.key : item));
         }
         this.m_capacity = newCapacity;
         this.m_items = newArray;

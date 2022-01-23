@@ -4,21 +4,21 @@ import { dataless_predicate_mc  } from "./z_dataless_predicate_mc.js"
 
 export {hashset_predicate_mc}
 
-function hashset_predicate_mc(tr, acceptingPredicate, hashFn, hashSeed, equalityFn, bound, canonize) {
+function hashset_predicate_mc(tr, acceptingPredicate, hashFn, equalityFn, bound, canonize) {
 
-    let known       = new LinearScanHashSet(1024, hashFn, hashSeed, equalityFn, false);
+    let known       = new LinearScanHashSet(1024, hashFn, equalityFn, false);
     let frontier    = new PingPongCircularBuffer(1024);
-    let parentTree  = new LinearScanHashSet(1024, hashFn, hashSeed, equalityFn, true); 
+    let parentTree  = new LinearScanHashSet(1024, hashFn, equalityFn, true); 
 
     return dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound, canonize);
 }
 
 //TODO: implement a real bloom-filter
-function bloom_predicate_mc(tr, acceptingPredicate, hashFn, hashSeed, bound, canonize) {
+function bloom_predicate_mc(tr, acceptingPredicate, hashFn, bound, canonize) {
 
     let known       = new BloomFilter(1024);
     let frontier    = new PingPongCircularBuffer(1024);
-    let parentTree  = new LinearScanHashSet(1024, hashFn, hashSeed, equalityFn, true); 
+    let parentTree  = new LinearScanHashSet(1024, hashFn, equalityFn, true); 
 
     return dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound, canonize);
 }
@@ -29,7 +29,7 @@ function bdd_predicate_mc(tr, acceptingPredicate, marshaller, bound, canonize) {
 
     let known       = new BDD(1024);
     let frontier    = new PingPongCircularBuffer(1024);
-    let parentTree  = new LinearScanHashSet(1024, hashFn, hashSeed, equalityFn, true); 
+    let parentTree  = new LinearScanHashSet(1024, hashFn, equalityFn, true); 
     let bdd_canonize = (c) => project(canonize(c))
     return dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound, bdd_canonize);
 }
@@ -40,7 +40,7 @@ function dfa_predicate_mc(tr, acceptingPredicate, configuration_iterator, bound,
 
     let known       = new MinimalDFA(1024);
     let frontier    = new PingPongCircularBuffer(1024);
-    let parentTree  = new LinearScanHashSet(1024, hashFn, hashSeed, equalityFn, true); 
+    let parentTree  = new LinearScanHashSet(1024, hashFn, equalityFn, true); 
     let dfa_canonize = (c) => configuration_iterator(canonize(c))
     return dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound, canonize);
 }

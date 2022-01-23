@@ -1,15 +1,31 @@
-export {KripkeBuchiAsymmetricSynchronousProduct, StateEventAsymmetricSynchronousProduct, STUTTERING}
+export {KripkeBuchiAsymmetricSynchronousProductSemantics, StateEventAsymmetricSynchronousProductSemantics, STUTTERING}
 
-function KripkeBuchiAsymmetricSynchronousProduct(kripke, buchi) {
-    this.kripke = kripke;
-    this.buchi  = buchi;
-
-    function initial() {
-        return this.buchi.initial().map( (abc) => ({kc: null, bc: abc}) );
+class KripkeBuchiAsymmetricSynchronousProductSemantics {
+    constructor(kripke, buchi) {
+        this.kripke = kripke;
+        this.buchi = buchi;
     }
 
-    function actions(source) {
-        let {kc:kripke_source, bc:buchi_source} = source;
+    configurationHashFn (configuration) {
+        let { kc, bc } = configuration;
+        seed = this.kripke.configurationHashFn(kc);
+        value = this.buchi.configurationHashFn(bc);
+        seed ^= value + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        return seed;
+    }
+
+    configurationEqFn(x, y) {
+        let { xkc, xbc } = x;
+        let { ykc, ybc } = y;
+        return this.kripke.configurationEqFn(xkc, ykc) && this.buchi.configurationEqFn(xbc, ybc);
+    };
+
+    initial() {
+        return this.buchi.initial().map((abc) => ({ kc: null, bc: abc }));
+    }
+
+    actions(source) {
+        let { kc: kripke_source, bc: buchi_source } = source;
         let synchronous_actions = [];
         //initial case: the kripke configuration is None -- the synthetic configuration introduced by the kripke2buchi
         if (kripke_source == null) {
@@ -38,11 +54,16 @@ function KripkeBuchiAsymmetricSynchronousProduct(kripke, buchi) {
         return synchronous_actions;
     }
 
-    function execute(action, configuration) {
-        let {ko:kripke_target, ba: buchi_action} = action;
-        let {kc:_, bc:buchi_source} = configuration;
+    execute(action, configuration) {
+        let { ko: kripke_target, ba: buchi_action } = action;
+        let { kc: _, bc: buchi_source } = configuration;
         let buchi_targets = this.buchi.execute(buchi_action, kripke_target, buchi_source);
-        return buchi_targets.map( (abc) => ({kc: kripke_target, bc: abc}) )
+        return buchi_targets.map((abc) => ({ kc: kripke_target, bc: abc }));
+    }
+
+    isAccepting(configuration) {
+        let { kc, bc } = configuration;
+        return this.kripke.isAccepting(kc) && this.buchi.isAccepting(bc);
     }
 }
 
@@ -53,22 +74,38 @@ function getSynchronousActions(buchi_semantics, kripke_output, buchi_config, io_
     return;
 }
 const STUTTERING = {};
-function StateEventAsymmetricSynchronousProduct(kripke, buchi) {
-    this.kripke = kripke;
-    this.buchi  = buchi;
+class StateEventAsymmetricSynchronousProductSemantics {
+    constructor(kripke, buchi) {
+        this.kripke = kripke;
+        this.buchi = buchi;
+    }
 
-    function initial() {
+
+    configurationHashFn(configuration) {
+        let { kc, bc } = configuration;
+        seed = this.kripke.configurationHashFn(kc);
+        value = this.buchi.configurationHashFn(bc);
+        seed ^= value + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        return seed;
+    };
+    configurationEqFn(x, y) {
+        let { xkc, xbc } = x;
+        let { ykc, ybc } = y;
+        return this.kripke.configurationEqFn(xkc, ykc) && this.buchi.configurationEqFn(xbc, ybc);
+    };
+
+    initial() {
         let initial_configurations = [];
         for (let kripke_config of this.kripke.initial()) {
             for (let buchi_config of this.buchi.initial()) {
-                initial_configurations.push( { kc: kripke_config, bc: buchi_config } );
+                initial_configurations.push({ kc: kripke_config, bc: buchi_config });
             }
         }
         return initial_configurations;
     }
 
-    function actions(source) {
-        let {kc:kripke_source, bc:buchi_source} = source;
+    actions(source) {
+        let { kc: kripke_source, bc: buchi_source } = source;
         let synchronous_actions = [];
         //the normal case: the kripke has a step, find the corresponding step in the buchi automaton
         let kripke_actions = this.kripke.actions(kripke_source);
@@ -80,23 +117,24 @@ function StateEventAsymmetricSynchronousProduct(kripke, buchi) {
                 continue;
             }
             for (let kripke_target of kripke_targets) {
-                let kripke_step = {s: kripke_source, a: kripke.action, t: kripke_target};
+                let kripke_step = { s: kripke_source, a: kripke.action, t: kripke_target };
                 getSynchronousActions(kripke_step, buchi_source, synchronous_actions);
             }
         }
         //the deadlock case: the kripke does not have a step, add stuttering
         if (number_of_actions == 0) {
-            let kripke_step = {s: kripke_source, a: STUTTERING, t: kripke_source};
+            let kripke_step = { s: kripke_source, a: STUTTERING, t: kripke_source };
             getSynchronousActions(kripke_step, buchi_source, synchronous_actions);
         }
         return synchronous_actions;
     }
 
-    function execute(action, configuration) {
-        let {ko: kripke_step, ba: buchi_action} = action;
-        let {kc:_, bc:buchi_source} = configuration;
-        let {s:_, a:_, t: kripke_target} = kripke_step;
+    execute(action, configuration) {
+        let { ko: kripke_step, ba: buchi_action } = action;
+        let { kc: kc, bc: buchi_source } = configuration;
+        let { s: s, a: a, t: kripke_target } = kripke_step;
         let buchi_targets = this.buchi.execute(buchi_action, kripke_step, buchi_source);
-        return buchi_targets.map( (abc) => ({kc: kripke_target, bc: abc}) )
+        return buchi_targets.map((abc) => ({ kc: kripke_target, bc: abc }));
     }
 }
+
