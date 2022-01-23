@@ -22,8 +22,8 @@ export { dataless_predicate_mc }
  */
 
 function dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound=Number.MAX_SAFE_INTEGER, canonize = (n)=> n) {
-    let initial = tr.initial;
-    let next    = tr.next;
+    let initial = tr.initial();
+    let next    = (c) => tr.next(c);
     function on_node(s,n,cn,l,mem) {
         mem.holds = acceptingPredicate(n);
         mem.witness = mem.holds ? n : null;

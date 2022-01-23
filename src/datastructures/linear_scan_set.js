@@ -3,7 +3,7 @@ export {LinearScanHashSet};
 
 function LinearScanHashSet(capacity, hashFunction, equalityFunction, isMap) {
     this.m_capacity         = capacity;                     // The capacity of the underlying container
-    this.m_hashFunction     = hashFunction;   // The hash function which will be used
+    this.m_hashFunction     = (c) => Math.abs(hashFunction(c));   // The hash function which will be used
     this.m_equalsFunction   = equalityFunction;  // The equality test function, by default identity test
     this.m_maxLoadFactor    = 0.667;                        // The maximum load factor, when this load factor is reached the m_items will grow by m_growthFactor
     this.m_growthFactor     = 2;                            // The growth factor

@@ -8,15 +8,15 @@ class KripkeBuchiAsymmetricSynchronousProductSemantics {
 
     configurationHashFn (configuration) {
         let { kc, bc } = configuration;
-        seed = this.kripke.configurationHashFn(kc);
-        value = this.buchi.configurationHashFn(bc);
+        let seed = this.kripke.configurationHashFn(kc);
+        let value = this.buchi.configurationHashFn(bc);
         seed ^= value + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         return seed;
     }
 
     configurationEqFn(x, y) {
-        let { xkc, xbc } = x;
-        let { ykc, ybc } = y;
+        let { kc:xkc,bc: xbc } = x;
+        let { kc:ykc, bc:ybc } = y;
         return this.kripke.configurationEqFn(xkc, ykc) && this.buchi.configurationEqFn(xbc, ybc);
     };
 
@@ -30,7 +30,7 @@ class KripkeBuchiAsymmetricSynchronousProductSemantics {
         //initial case: the kripke configuration is None -- the synthetic configuration introduced by the kripke2buchi
         if (kripke_source == null) {
             for (let kripke_target of this.kripke.initial()) {
-                getSynchronousActions(kripke_target, buchi_source, synchronous_actions);
+                getSynchronousActions(this.buchi, kripke_target, buchi_source, synchronous_actions);
             }
             return synchronous_actions;
         }
@@ -44,12 +44,12 @@ class KripkeBuchiAsymmetricSynchronousProductSemantics {
                 continue;
             }
             for (let kripke_target of kripke_targets) {
-                getSynchronousActions(kripke_target, buchi_source, synchronous_actions);
+                getSynchronousActions(this.buchi, kripke_target, buchi_source, synchronous_actions);
             }
         }
         //the deadlock case: the kripke does not have a step, add stuttering
         if (number_of_actions == 0) {
-            getSynchronousActions(kripke_source, buchi_source, synchronous_actions);
+            getSynchronousActions(this.buchi, kripke_source, buchi_source, synchronous_actions);
         }
         return synchronous_actions;
     }
@@ -118,13 +118,13 @@ class StateEventAsymmetricSynchronousProductSemantics {
             }
             for (let kripke_target of kripke_targets) {
                 let kripke_step = { s: kripke_source, a: kripke.action, t: kripke_target };
-                getSynchronousActions(kripke_step, buchi_source, synchronous_actions);
+                getSynchronousActions(this.buchi, kripke_step, buchi_source, synchronous_actions);
             }
         }
         //the deadlock case: the kripke does not have a step, add stuttering
         if (number_of_actions == 0) {
             let kripke_step = { s: kripke_source, a: STUTTERING, t: kripke_source };
-            getSynchronousActions(kripke_step, buchi_source, synchronous_actions);
+            getSynchronousActions(this.buchi, kripke_step, buchi_source, synchronous_actions);
         }
         return synchronous_actions;
     }

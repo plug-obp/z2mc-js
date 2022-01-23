@@ -31,10 +31,10 @@ class NASemantics {
     }
     execute(action, configuration) {
         let { guard, target } = action;
-        return target;
+        return [target];
     }
     isAccepting(configuration) {
-        return this.automata.isAccepting;
+        return this.automata.accepting(configuration);
     }
 }
 
@@ -52,16 +52,16 @@ class DependentNASemantics {
     }
     execute(action, input, configuration) {
         let { guard, target } = action;
-        return target;
+        return [target];
     }
     isAccepting(configuration) {
-        return this.automata.isAccepting;
+        return this.automata.accepting(configuration);
     }
 }
 
 function configurationHashFn(configuration) {
-    //the configuration is an integer x ∈ [Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]
-    return configuration;  
+    //the configuration is an integer x ∈ ([Number.MIN_SAFE_INTEGER, Number.MAX_SAFE_INTEGER] ∪ {null})
+    return configuration == null ? -1 : configuration;  
 }
 function configurationEqFn(a, b) {
     return a === b;

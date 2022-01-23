@@ -1,5 +1,5 @@
 import { NASyntax } from "../../nondeterministic-automata/nondeterministic_automata_semantics.js";
-export {traffic_light_na, traffic_light_observer};
+export {traffic_light_na, traffic_light_observer_false, traffic_light_observer_true};
 const GREEN = 0;
 const YELLOW = 1;
 const RED = 2;
@@ -19,7 +19,7 @@ function traffic_light_na() {
     );
 }
 
-function traffic_light_observer() {
+function traffic_light_observer_false() {
     const q0 = 0, q1 = 1, qF = 2;
     return new NASyntax(
         [q0],
@@ -38,3 +38,21 @@ function traffic_light_observer() {
     );
 }
 
+function traffic_light_observer_true() {
+    const q0 = 0, q1 = 1, qF = 2;
+    return new NASyntax(
+        [q0],
+        {
+        /*q0*/0:[ 
+                {guard: (i,c) => i!==RED && i!==YELLOW, target: q0}, 
+                {guard: (i,c) => i===RED,               target: qF}, 
+                {guard: (i,c) => i===YELLOW && i!==RED, target: q1} ],
+        /*q1*/1:[ 
+                {guard: (i,c) => i===YELLOW,            target: q1}, 
+                {guard: (i,c) => i!==YELLOW,            target: q0}],
+        /*qF*/2:[],
+        },
+        (c) => c === qF,
+        false
+    );
+}
