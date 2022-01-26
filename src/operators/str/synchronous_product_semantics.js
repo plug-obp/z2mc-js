@@ -37,7 +37,7 @@ class KripkeBuchiAsymmetricSynchronousProductSemantics {
     }
 
     configurationEqFn(x, y) {
-        let { kc:xkc,bc: xbc } = x;
+        let { kc:xkc, bc:xbc } = x;
         let { kc:ykc, bc:ybc } = y;
         return this.kripke.configurationEqFn(xkc, ykc) && this.buchi.configurationEqFn(xbc, ybc);
     };

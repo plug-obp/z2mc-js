@@ -27,7 +27,7 @@ import { traffic_light_na
     , se_traffic_light_observer_true
     , test_true } from "./models/na/german_traffic_light.js"
 import { DependentNASemantics, NASemantics } from "./nondeterministic-automata/nondeterministic_automata_semantics.js";
-import { STR2TR } from "./operators/str2tr.js";
+import { STR2TR } from "./operators/str/str2tr.js";
 import { KripkeBuchiAsymmetricSynchronousProductSemantics, StateEventAsymmetricSynchronousProductSemantics } from "./operators/synchronous_product_semantics.js";
 import { hashset_predicate_mc_simple } from "./model-checkers/z_hashset_predicate_mc.js";
 

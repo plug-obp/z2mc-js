@@ -20,18 +20,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-export {CutterTR}
+export {IdentityTR}
 
-class CutterTR {
-    constructor(aTR, aPredicate) {
+class IdentityTR {
+    constructor(aTR) {
         this.operand = aTR;
-        this.cutPredicate = aPredicate;
     }
     initial() {
         return this.operand.initial();
     }
     next(source) {
-        if (this.cutPredicate(source) == true) return [];
         return this.operand.next(source);
     }
     isAccepting(c) {

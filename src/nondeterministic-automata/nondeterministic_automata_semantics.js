@@ -23,7 +23,7 @@
 export {NASyntax, NASemantics, DependentNASemantics}
 
 /**
- * non-dependent guards: {1: [{ guard: (i, c) => true, target: 2 }], 2: []}
+ * non-dependent guards: {1: [{ guard: (c) => true, target: 2 }], 2: []}
  * dependent guards: {1: [{ guard: (i, c) => true, target: 2 }], 2: []}
  * @param {*} initial is an array of initial configurations
  * @param {*} delta is a dictionary of fanout with transitions labeled by guards
@@ -49,7 +49,7 @@ class NASemantics {
         return this.automata.initial;
     };
     actions(source) {
-        return this.automata.delta[source].filter((gt) => gt.guard(source));
+        return (this.automata.delta[source]??[]).filter((gt) => gt.guard(source));
     }
     execute(action, configuration) {
         let { guard, target } = action;
@@ -70,7 +70,7 @@ class DependentNASemantics {
         return this.automata.initial;
     }
     actions(input, source) {
-        return this.automata.delta[source].filter((gt) => gt.guard(input, source));
+        return (this.automata.delta[source]??[]).filter((gt) => gt.guard(input, source));
     }
     execute(action, input, configuration) {
         let { guard, target } = action;

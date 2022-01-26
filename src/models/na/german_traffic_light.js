@@ -89,7 +89,7 @@ function se_traffic_light_observer_false() {
     return new NASyntax(
         [q0],
         {
-        /*q0*/0:[ 
+        /*q0*/0:[ // i.s === i.t+1 
                 {guard: (i,c) => i.s!==RED && i.s!==YELLOW, target: q0}, 
                 {guard: (i,c) => i.s===RED,               target: q1}, 
                 {guard: (i,c) => i.s===YELLOW && i.s!==RED, target: qF} ],
