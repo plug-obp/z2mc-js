@@ -21,7 +21,7 @@
 // SOFTWARE.
 
 import { aliceBob0, aliceBob1, aliceBob2, peterson } from "./models/graph/graph_alicebob.js";
-import { hashset_predicate_mc_full } from "./model-checkers/z_hashset_predicate_mc.js";
+import { dfs_hashset_predicate_mc_full, hashset_predicate_mc_full } from "./model-checkers/z_hashset_predicate_mc.js";
 
 
 let model = new aliceBob0();
@@ -46,10 +46,16 @@ console.log(JSON.stringify(result));
 result = hashset_predicate_mc_full(tr, model.exclusion, (c,s) => c, (a, b) => a === b, Number.MAX_SAFE_INTEGER, (c) => c);
 console.log("exclusion " + JSON.stringify(result));
 
+result = dfs_hashset_predicate_mc_full(tr, model.exclusion, (c,s) => c, (a, b) => a === b, (c) => c);
+console.log("DFS exclusion " + JSON.stringify(result));
+
 //deadlock
 let deadlockPred = (c) => tr.next(c).length == 0
 result = hashset_predicate_mc_full(tr, deadlockPred, (c,s) => c, (a, b) => a === b, Number.MAX_SAFE_INTEGER, (c) => c);
 console.log("deadlock " + JSON.stringify(result));
+
+result = dfs_hashset_predicate_mc_full(tr, deadlockPred, (c,s) => c, (a, b) => a === b, (c) => c);
+console.log("DFS deadlock " + JSON.stringify(result));
 
 /**
  * ALICE && BOB 1
@@ -144,3 +150,6 @@ tr = {
 
 result = hashset_predicate_mc_full(tr, (c)=>c[0]==100&&c[1]==50, (c,s) => c[0]+c[1], (a, b) => a[0] === b[0] && a[1]===b[1], Number.MAX_SAFE_INTEGER, (c)=>c);
 console.log("two counters " + JSON.stringify(result));
+
+// result = dfs_hashset_predicate_mc_full(tr, (c)=>c[0]==100&&c[1]==50, (c,s) => c[0]+c[1], (a, b) => a[0] === b[0] && a[1]===b[1], (c) => c);
+// console.log("DFS two counters " + JSON.stringify(result));

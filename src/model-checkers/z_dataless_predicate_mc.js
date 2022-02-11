@@ -21,8 +21,9 @@
 // SOFTWARE.
 
 import { dataless_bfs_traversal } from "../algorithms/z_dataless_bfs.js";
+import { dataless_dfs_traversal } from "../algorithms/z_dataless_dfs.js";
 
-export { dataless_predicate_mc }
+export { dataless_predicate_mc, dfs_dataless_predicate_mc }
 
 /**
  * 
@@ -83,4 +84,31 @@ function dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTr
         parent = parents.get(parent);
     }
     return trace;
+}
+
+function dfs_dataless_predicate_mc(tr, acceptingPredicate, known, stack, canonize = (n)=> n) {
+    let initial = tr.initial();
+    let next    = (c) => tr.next(c);
+
+    function on_entry(s,n,cn,stack,mem) {
+        mem.holds = acceptingPredicate(n);
+        mem.witness = mem.holds ? n : null;
+        mem.configuration_count++;
+        mem.trace = mem.holds ? stack : [];
+        return mem.holds;
+    }
+    let memory = {
+        holds:   true,
+        witness: null,
+        configuration_count: 0, 
+        trace: [],
+    }            
+    let {holds, witness, configuration_count, trace} = dataless_dfs_traversal(
+        initial, next, 
+        on_entry, (s,n,cn,st,m) => false, (s,st,m) => false, memory, 
+        known, stack, 
+        canonize)
+    trace = trace.map(e => e.configuration)
+    trace.push(witness)
+    return {verified: !holds, trace: trace, configuration_count};
 }

@@ -22,9 +22,10 @@
 
 import { LinearScanHashSet      } from "../datastructures/linear_scan_set.js"
 import { PingPongCircularBuffer } from "../datastructures/pingpong_unbounded_circular_buffer.js";
-import { dataless_predicate_mc  } from "./z_dataless_predicate_mc.js"
+import { UnboundedStack } from "../datastructures/unbounded_stack.js";
+import { dataless_predicate_mc, dfs_dataless_predicate_mc  } from "./z_dataless_predicate_mc.js"
 
-export {hashset_predicate_mc_simple, hashset_predicate_mc_full}
+export {hashset_predicate_mc_simple, hashset_predicate_mc_full, dfs_hashset_predicate_mc_full}
 
 function hashset_predicate_mc_full(tr, acceptingPredicate, hashFn, equalityFn, bound, canonize) {
 
@@ -45,6 +46,14 @@ function hashset_predicate_mc_simple(tr, acceptingPredicate, bound) {
     let canonize    = (c) => c;                         //identity
 
     return dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound, canonize);
+}
+
+function dfs_hashset_predicate_mc_full(tr, acceptingPredicate, hashFn, equalityFn, canonize) {
+
+    let known       = new LinearScanHashSet(1024, hashFn, equalityFn, false);
+    let stack    = new UnboundedStack(1024, 2);
+
+    return dfs_dataless_predicate_mc(tr, acceptingPredicate, known, stack, canonize);
 }
 
 /*

@@ -52,16 +52,16 @@ function dataless_dfs_traversal (
             const neighbour = frame.neighbours[frame.index++];
             const canonical_neighbour = canonize(neighbour);
             if (known.addIfAbsent(canonical_neighbour)) {
-                const terminate = on_entry(frame.configuration, neighbour, canonical_neighbour, memory);
+                const terminate = on_entry(frame.configuration, neighbour, canonical_neighbour, stack, memory);
                 if (terminate) return memory;
                 stack.push( { configuration: neighbour, neighbours: next(neighbour), index: 0} );
             }
-            const terminate = on_node(frame.configuration, neighbour, canonical_neighbour, memory);
+            const terminate = on_node(frame.configuration, neighbour, canonical_neighbour, stack, memory);
             if (terminate) return memory;
             continue;
         }
         stack.pop();
-        const terminate = on_exit(frame.configuration, memory);
+        const terminate = on_exit(frame.configuration, stack, memory);
         if (terminate) return memory;
     }
     return memory;
