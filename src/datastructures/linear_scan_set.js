@@ -22,6 +22,11 @@
 
 export {LinearScanHashSet};
 
+/**
+ *  ∀ x ∈ α, known ≠ ∅ →             add(known, x) = true ∧ x ∈ known'
+ *  ∀ x ∈ α, known ≠ ∅ → x ∉ known → add(known, x) = true ∧ x ∈ known'
+ *  ∀ x ∈ α, known ≠ ∅ → x ∈ known → add(known, x) = false
+*/
 function LinearScanHashSet(capacity, hashFunction, equalityFunction, isMap) {
     this.m_capacity         = capacity;                     // The capacity of the underlying container
     this.m_hashFunction     = (c) => Math.abs(hashFunction(c));   // The hash function which will be used
