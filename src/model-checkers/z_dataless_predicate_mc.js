@@ -96,19 +96,21 @@ function dfs_dataless_predicate_mc(tr, acceptingPredicate, known, stack, canoniz
         mem.configuration_count++;
         mem.trace = mem.holds ? stack : [];
         return mem.holds;
-    }
+    };
     let memory = {
         holds:   true,
         witness: null,
         configuration_count: 0, 
         trace: [],
-    }            
+    };     
     let {holds, witness, configuration_count, trace} = dataless_dfs_traversal(
         initial, next, 
         on_entry, (s,n,cn,st,m) => false, (s,st,m) => false, memory, 
         known, stack, 
-        canonize)
-    trace = trace.map(e => e.configuration)
-    trace.push(witness)
+        canonize);
+    trace = trace.map(e => e.configuration);
+    trace = trace.slice(1);
+    trace.push(witness);
+    trace.reverse();
     return {verified: !holds, trace: trace, configuration_count};
 }
