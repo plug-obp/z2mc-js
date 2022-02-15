@@ -20,6 +20,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+import { dataless_dfs_traversal } from "../algorithms/z_dataless_dfs.js";
+
 /**
  * CVWY92_Algorithm2 is the algorithm 2 from [1]. The recursive pseudocode seems to be:
 ```
@@ -50,22 +52,19 @@ dfs₂(s, seed, k₂)
  * Formal methods in system design 1, no. 2 (1992): 275-288.
  */
 
-function CVWY92_Algorithm2(tr, acceptingPredicate, hashFn, equalityFn, canonize) {
+function CVWY92_Algorithm2(initial, next, acceptingPredicate, hashFn, equalityFn, canonize) {
     let known1      = new LinearScanHashSet(1024, hashFn, equalityFn, false);
     let stack1      = new UnboundedStack(1024, 2);
     let known2      = new LinearScanHashSet(1024, hashFn, equalityFn, false);
     let stack2      = new UnboundedStack(1024, 2);
-    return CVWY92_Algorithm2_dfs1(tr, acceptingPredicate, known1, stack1, known2, stack2, canonize);
+    return CVWY92_Algorithm2_dfs1(initial, next, acceptingPredicate, known1, stack1, known2, stack2, canonize);
 }
 
 //the first DFS checks the accepting predicate in postorder (on_exit)
-function CVWY92_Algorithm2_dfs1(tr, acceptingPredicate, known1, stack1, known2, stack2, canonize) {
-    let initial = tr.initial();
-    let next    = (c) => tr.next(c);
-    
-    function on_exit_dfs1(n,stack,mem) {
+function CVWY92_Algorithm2_dfs1(initial, next, acceptingPredicate, known1, stack1, known2, stack2, canonize) {
+    function on_exit_dfs1(n,k,stack,mem) {
         if (acceptingPredicate(n)) {
-            let {holds, _, cc, trace} = CVWY92_Algorithm2_dfs2( {initial: [n], next: tr.next}, (c)=> tr.next(c).find((e) => e === n), known2, stack2, canonize);
+            let {holds, _, cc, trace} = CVWY92_Algorithm2_dfs2([n], next, (c)=> tr.next(c).find((e) => e === n), known2, stack2, canonize);
             mem.holds = holds;
             mem.witness = mem.holds ? n : null;
             mem.configuration_count += cc;
@@ -84,17 +83,14 @@ function CVWY92_Algorithm2_dfs1(tr, acceptingPredicate, known1, stack1, known2, 
     let stack1    = new UnboundedStack(1024, 2);
     let {holds, witness, configuration_count, trace} = dataless_dfs_traversal(
         initial, next, 
-        (s,n,cn,st,m)=>false, (s,n,cn,st,m) => false, on_exit_dfs1, memory, 
+        (s,n,cn,k,st,m)=>false, (s,n,cn,k,st,m) => false, on_exit_dfs1, memory, 
         known1, stack1, 
         canonize);
     return {verified: !holds, trace: trace, configuration_count};
 }
 
 //the second DFS checks the accepting predicate in preorder (on_entry)
-function CVWY92_Algorithm2_dfs2(tr, acceptingPredicate, known, stack, canonize) {
-    let initial = tr.initial();
-    let next    = (c) => tr.next(c);
-
+function CVWY92_Algorithm2_dfs2(initial, next, acceptingPredicate, known, stack, canonize) {
     function on_entry_dfs2(s,n,cn,stack,mem) {
         if (acceptingPredicate(n)) {
             mem.holds = true;
@@ -114,7 +110,7 @@ function CVWY92_Algorithm2_dfs2(tr, acceptingPredicate, known, stack, canonize) 
     };     
     return dataless_dfs_traversal(
         initial, next, 
-        on_entry_dfs2, (s,n,cn,st,m) => false, (n,st,m)=>false, memory, 
+        on_entry_dfs2, (s,n,cn,k,st,m) => false, (n,k,st,m)=>false, memory, 
         known, stack, 
         canonize);
 }

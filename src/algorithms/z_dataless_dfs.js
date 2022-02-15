@@ -51,18 +51,28 @@ function dataless_dfs_traversal (
         if ( frame.index < frame.neighbours.length ) {
             const neighbour = frame.neighbours[frame.index++];
             const canonical_neighbour = canonize(neighbour);
+
+            //on neighbour
+            const terminate = on_node(true, frame.configuration, neighbour, canonical_neighbour, known, stack, memory);
+            if (terminate) return memory;
+
             if (known.addIfAbsent(canonical_neighbour)) {
+                //on unknown
                 const terminate = on_entry(frame.configuration, neighbour, canonical_neighbour, known, stack, memory);
                 if (terminate) return memory;
                 stack.push( { configuration: neighbour, neighbours: next(neighbour), index: 0} );
+                continue;
             }
-            const terminate = on_node(frame.configuration, neighbour, canonical_neighbour, known, stack, memory);
+
+            //on known
+            const terminate = on_node(false, frame.configuration, neighbour, canonical_neighbour, known, stack, memory);
             if (terminate) return memory;
-            continue;
         }
-        stack.pop();
+        //call it here so that we still have the node frame on the stack
         const terminate = on_exit(frame.configuration, known, stack, memory);
         if (terminate) return memory;
+        //we care about the stack only if we don't terminate ?
+        stack.pop();
     }
     return memory;
 }
