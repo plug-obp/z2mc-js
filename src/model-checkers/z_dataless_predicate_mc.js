@@ -90,7 +90,7 @@ function dfs_dataless_predicate_mc(tr, acceptingPredicate, known, stack, canoniz
     let initial = tr.initial();
     let next    = (c) => tr.next(c);
 
-    function on_entry(s,n,cn,stack,mem) {
+    function on_entry(s,n,cn,k,stack,mem) {
         mem.holds = acceptingPredicate(n);
         mem.witness = mem.holds ? n : null;
         mem.configuration_count++;
@@ -105,7 +105,7 @@ function dfs_dataless_predicate_mc(tr, acceptingPredicate, known, stack, canoniz
     };     
     let {holds, witness, configuration_count, trace} = dataless_dfs_traversal(
         initial, next, 
-        on_entry, (s,n,cn,st,m) => false, (s,st,m) => false, memory, 
+        on_entry, (s,n,cn,k,st,m) => false, (s,k,st,m) => false, memory, 
         known, stack, 
         canonize);
     trace = trace.map(e => e.configuration);
