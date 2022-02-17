@@ -69,12 +69,20 @@ function dataless_bfs_traversal
             let canonical_neighbour = canonize(neighbour);
             if (known.addIfAbsent(canonical_neighbour)) {
                 if (on_entry != null) {
+                    //on_entry - on unknown
                     let terminate = on_entry(source, neighbour, canonical_neighbour, layer, memory);
                     if (terminate) return memory;
                 }
                 frontier.enqueue(neighbour);
             }
+            //on_known - is called on sharing-links and back-loops
+            //const terminate = on_known(frame.configuration, neighbour, canonical_neighbour, memory);
+            //if (terminate) return memory;
         }
+        //on_exit it is called after all node children are in the frontier
+        //const terminate = on_exit(frame.configuration, frame, memory);
+        //if (terminate) return memory;
+
         if (frontier.layerChanged()) {
             frontier.markLayer();
             layer++;
