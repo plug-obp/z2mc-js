@@ -68,11 +68,11 @@ function dataless_dfs_traversal (
             const terminate = on_node(false, frame.configuration, neighbour, canonical_neighbour, known, stack, memory);
             if (terminate) return memory;
         }
-        //call it here so that we still have the node frame on the stack
-        const terminate = on_exit(frame.configuration, known, stack, memory);
-        if (terminate) return memory;
-        //we care about the stack only if we don't terminate ?
+        
         stack.pop();
+
+        const terminate = on_exit(frame.configuration, frame, known, stack, memory);
+        if (terminate) return memory;
     }
     return memory;
 }

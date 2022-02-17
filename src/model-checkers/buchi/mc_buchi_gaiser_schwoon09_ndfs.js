@@ -110,17 +110,31 @@ function GaiserSchwoon_dfs_blue(initial, next, acceptingPredicate, known, stack_
         return false;
     }
 
-    function on_exit(n, k, st, m) {
-        const frame = st.peek();
+    function on_exit(n, frame, k, st, m) {
+        if (st.isEmpty()) return false;
+        const sourceFrame = st.peek();
+        //if i'm not red, tell my parent that i'm not
+        if (k.get(frame.canonical) !== Symbol('red')) {
+            sourceFrame.allRed = false;
+        }
+        
+        //if all my children are red, make myself red
         if (frame.allRed === true) {
             k.add(frame.canonical, Symbol('red'));
             return false;
         }
         //if n is an accepting state dfs_red
-        if (acceptingPredicate(n)) {
-            const result = GaiserSchwoon_dfs_red([n], next, known, stack_red, canonize);
-            k.add(frame.canonical, Symbol('red'));
-            return result;
+        if (acceptingPredicate(frame.configuration)) {
+            const result = GaiserSchwoon_dfs_red([frame.configuration], next, known, stack_red, canonize);
+            if (result.holds) {
+                k.add(frame.canonical, Symbol('red'));
+                return false;
+            }
+            //i have a counter example
+            m.holds = false;
+            m.witness = frame.configuration;
+            m.trace = stack_blue.map(e => e.configuration).slice(1).push(n) + result.trace ;
+            return true;
         }
         k.add(frame.canonical, Symbol('blue'));
         return false;
