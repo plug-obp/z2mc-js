@@ -94,8 +94,7 @@ function GaiserSchwoon_dfs_blue(initial, next, acceptingPredicate, known, stack_
         return false;
     }
 
-    function on_entry(s,n,cn,k,st,m) {
-        if (hasLoop(s, n, cn, m)) return true;
+    function on_entry(s,n,cn,m) {
         //add an allRed field to the current frame
         const frame = stack_blue.peek();
         frame.allRed = true;
