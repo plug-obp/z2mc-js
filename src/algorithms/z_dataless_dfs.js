@@ -39,11 +39,10 @@ export {dataless_dfs_traversal}
  * @returns {γ}             the memory
  */
 function dataless_dfs_traversal (
-    initial, next,
-    on_entry, on_node, on_exit, memory,
-    known,
-    stack,
-    canonize
+    initial, next, canonize,            // graph related
+    on_entry, on_known, on_exit, memory,// algorithm related
+    addIfAbsent,
+    stack
 ) {
     stack.push( { configuration: null, neighbours: initial, index: 0 } );
     while ( !stack.isEmpty() ) {
@@ -52,26 +51,22 @@ function dataless_dfs_traversal (
             const neighbour = frame.neighbours[frame.index++];
             const canonical_neighbour = canonize(neighbour);
 
-            //on neighbour
-            const terminate = on_node(true, frame.configuration, neighbour, canonical_neighbour, known, stack, memory);
-            if (terminate) return memory;
-
-            if (known.addIfAbsent(canonical_neighbour)) {
-                //on unknown
-                const terminate = on_entry(frame.configuration, neighbour, canonical_neighbour, known, stack, memory);
-                if (terminate) return memory;
+            if (addIfAbsent(canonical_neighbour)) {
                 stack.push( { configuration: neighbour, neighbours: next(neighbour), index: 0} );
+                //on unknown
+                const terminate = on_entry(frame.configuration, neighbour, canonical_neighbour, memory);
+                if (terminate) return memory;
                 continue;
             }
 
-            //on known
-            const terminate = on_node(false, frame.configuration, neighbour, canonical_neighbour, known, stack, memory);
+            //on known - is called on sharing-links and back-loops
+            const terminate = on_known(frame.configuration, neighbour, canonical_neighbour, memory);
             if (terminate) return memory;
         }
         
         stack.pop();
 
-        const terminate = on_exit(frame.configuration, frame, known, stack, memory);
+        const terminate = on_exit(frame.configuration, frame, memory);
         if (terminate) return memory;
     }
     return memory;
