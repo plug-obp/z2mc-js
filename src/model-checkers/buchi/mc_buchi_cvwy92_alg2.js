@@ -52,65 +52,63 @@ dfs₂(s, seed, k₂)
  * Formal methods in system design 1, no. 2 (1992): 275-288.
  */
 
-function CVWY92_Algorithm2(initial, next, acceptingPredicate, hashFn, equalityFn, canonize) {
+function CVWY92_Algorithm2(initial, next, canonize, acceptingPredicate, hashFn, equalityFn) {
     let known1      = new LinearScanHashSet(1024, hashFn, equalityFn, false);
     let stack1      = new UnboundedStack(1024, 2);
     let known2      = new LinearScanHashSet(1024, hashFn, equalityFn, false);
     let stack2      = new UnboundedStack(1024, 2);
-    return CVWY92_Algorithm2_dfs1(initial, next, acceptingPredicate, known1, stack1, known2, stack2, canonize);
+    return CVWY92_Algorithm2_dfs1(initial, next, canonize, acceptingPredicate, known1, stack1, known2, stack2);
 }
 
 //the first DFS checks the accepting predicate in postorder (on_exit)
-function CVWY92_Algorithm2_dfs1(initial, next, acceptingPredicate, known1, stack1, known2, stack2, canonize) {
-    function on_exit_dfs1(n,k,stack,mem) {
+function CVWY92_Algorithm2_dfs1(initial, next, canonize, acceptingPredicate, known1, stack1, known2, stack2) {
+    function on_exit(n, frame, mem) {
         if (acceptingPredicate(n)) {
-            let {holds, _, cc, trace} = CVWY92_Algorithm2_dfs2([n], next, (c)=> tr.next(c).find((e) => e === n), known2, stack2, canonize);
+            let {holds, _, cc, trace} = CVWY92_Algorithm2_dfs2(n, next, canonize, known2, stack2);
             mem.holds = holds;
             mem.witness = mem.holds ? n : null;
-            mem.configuration_count += cc;
-            mem.trace = mem.holds ? stack.map(e => e.configuration).slice(1).push(n) + trace : [];
+            mem.cc += cc;
+            mem.trace = mem.holds ? stack1.map(e => e.configuration).slice(1).push(n) + trace : [];
             return mem.holds;
         }
-        mem.configuration_count++;
+        mem.cc++;
         return false;
     };
     let memory = {
         holds:   true,
         witness: null,
-        configuration_count: 0, 
+        cc: 0, 
         trace: [],
     };
-    let stack1    = new UnboundedStack(1024, 2);
     let {holds, witness, configuration_count, trace} = dataless_dfs_traversal(
-        initial, next, 
-        (s,n,cn,k,st,m)=>false, (s,n,cn,k,st,m) => false, on_exit_dfs1, memory, 
-        known1, stack1, 
-        canonize);
+        initial, next, canonize,
+        (s,n,cn,m)=>false, (s,n,cn,m) => false, on_exit, memory, 
+        known1, stack1);
     return {verified: !holds, trace: trace, configuration_count};
 }
 
 //the second DFS checks the accepting predicate in preorder (on_entry)
-function CVWY92_Algorithm2_dfs2(initial, next, acceptingPredicate, known, stack, canonize) {
-    function on_entry_dfs2(s,n,cn,stack,mem) {
-        if (acceptingPredicate(n)) {
+function CVWY92_Algorithm2_dfs2(seed, next, canonize, known, stack) {
+    function on_entry(s,n,cn,mem) {
+        //if seed ∈ next(s) then report violation
+        if (next(n).find((e) => e === seed)) {
             mem.holds = true;
-            mem.witness = n;
-            mem.configuration_count += 1;
+            mem.witness = seed;
+            mem.cc += 1;
             mem.trace = stack.map(e => e.configuration).slice(1);
             return true;
         }
-        mem.configuration_count++;
+        mem.cc++;
         return false;
     };
     let memory = {
         holds:   true,
         witness: null,
-        configuration_count: 0, 
+        cc: 0, 
         trace: [],
     };     
     return dataless_dfs_traversal(
-        initial, next, 
-        on_entry_dfs2, (s,n,cn,k,st,m) => false, (n,k,st,m)=>false, memory, 
-        known, stack, 
-        canonize);
+        initial, next, canonize,
+        on_entry, (s,n,cn,m) => false, (n,frame,m)=>false, memory, 
+        known, stack);
 }
