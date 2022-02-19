@@ -20,7 +20,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import { dataless_dfs_traversal } from "../algorithms/z_dataless_dfs.js";
+import { dataless_dfs_traversal } from "../../algorithms/z_dataless_dfs.js";
+import { LinearScanHashSet      } from "../../datastructures/linear_scan_set.js"
+import { UnboundedStack         } from "../../datastructures/unbounded_stack.js";
+
+export {GaiserSchwoon_ndfs}
 
 /**
  * The improved nested DFS algorithm from [1], Figure 1.
@@ -81,10 +85,17 @@ function GaiserSchwoon_ndfs(initial, next, canonize, acceptingPredicate, hashFn,
 }
 
 function GaiserSchwoon_dfs_blue(initial, next, canonize, acceptingPredicate, known, stack_blue, stack_red) {
-
+    //we recurse only if the color is white
+    function addIfAbsent(k) {
+        if (known.get(k) === null) {
+            known.add(k, Symbol.for('cyan'));
+            return true;
+        }
+        return false;
+    }
 
     function hasLoop(s, n, cn, m) {
-        if (known.get(cn) === Symbol('cyan')
+        if (known.get(cn) === Symbol.for('cyan')
         && (acceptingPredicate(s) || acceptingPredicate(n))) {
             m.holds = false;
             m.witness = n;
@@ -107,7 +118,7 @@ function GaiserSchwoon_dfs_blue(initial, next, canonize, acceptingPredicate, kno
         if (hasLoop(s, n, cn, m)) return true;
         //if (n) is not red,
         //the tell its parent (s) it has at least one non red child
-        if (known.get(cn) !== Symbol('red')) {
+        if (known.get(cn) !== Symbol.for('red')) {
             stack_blue.peek().allRed = false;
         }
         return false;
@@ -116,23 +127,25 @@ function GaiserSchwoon_dfs_blue(initial, next, canonize, acceptingPredicate, kno
     function on_exit(n, frame, m) {
         //if all my children are red, make myself red
         if (frame.allRed === true) {
-            known.add(frame.canonical, Symbol('red'));
+            known.add(frame.canonical, Symbol.for('red'));
             return false;
         }
         //if n is an accepting state dfs_red
         if (acceptingPredicate(n)) {
-            const result = GaiserSchwoon_dfs_red([n], next, canonize, known, stack_red);
+            const result = GaiserSchwoon_dfs_red(next(n), next, canonize, known, stack_red);
             if (result.holds) {
-                known.add(frame.canonical, Symbol('red'));
+                known.add(frame.canonical, Symbol.for('red'));
                 return false;
             }
             //i have a counter example
             m.holds = false;
             m.witness = n;
-            m.trace = stack_blue.map(e => e.configuration).slice(1).push(n) + result.trace ;
+            m.trace = stack_blue.map(e => e.configuration).slice(1);
+            m.trace.push(n);
+            m.trace.push(result.trace);
             return true;
         }
-        known.add(frame.canonical, Symbol('blue'));
+        known.add(frame.canonical, Symbol.for('blue'));
         //if i'm not red, tell my parent that i'm not
         if (stack_blue.isEmpty()) return false;
         const parentFrame = stack_blue.peek();
@@ -148,7 +161,7 @@ function GaiserSchwoon_dfs_blue(initial, next, canonize, acceptingPredicate, kno
     let {holds, witness, trace, cc} = dataless_dfs_traversal(
         initial, next, canonize,
         on_entry, on_known, on_exit, memory,
-        (k) => known.add(k, Symbol('cyan')),
+        addIfAbsent,
         stack_blue
     );
     return {verified: !holds, trace: trace, configuration_count: cc}
@@ -157,8 +170,8 @@ function GaiserSchwoon_dfs_blue(initial, next, canonize, acceptingPredicate, kno
 function GaiserSchwoon_dfs_red(initial, next, canonize, known, stack) {
     //we recurse only if the color is blue
     function addIfAbsent(k) {
-        if (known.get(k) === Symbol('blue')) {
-            known.add(k, Symbol('red'));
+        if (known.get(k) === Symbol.for('blue')) {
+            known.add(k, Symbol.for('red'));
             return true;
         }
         return false;
@@ -171,17 +184,18 @@ function GaiserSchwoon_dfs_red(initial, next, canonize, known, stack) {
     }
 
     function on_known(s,n,cn,m) {
-        if (known.get(cn) === Symbol('cyan')) {
+        if (known.get(cn) === Symbol.for('cyan')) {
             m.holds = false;
             m.witness = n;
-            m.trace = stack.map(e => e.configuration);
+            m.trace = stack.map(e => e.configuration).slice(1);
+            m.trace.push(n);
             return true;
         }
         return false;
     }
     memory = dataless_dfs_traversal(
         initial, next, canonize,
-        (s,n,cn,m) => false, on_known, (n,frame,m)=>false,
+        (s,n,cn,m) => false, on_known, (n,frame,m)=>false, memory,
         addIfAbsent, 
         stack
     );
