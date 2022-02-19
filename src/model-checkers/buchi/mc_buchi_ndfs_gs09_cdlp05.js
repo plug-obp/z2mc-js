@@ -142,7 +142,7 @@ function dfs_blue(initial, next, canonize, acceptingPredicate, known, stack_blue
         addIfAbsent,
         stack_blue
     );
-    return {verified: !holds, trace: trace, configuration_count: cc}
+    return {verified: holds, trace: trace, configuration_count: cc}
 }
 
 function dfs_red(initial, next, canonize, known, stack) {

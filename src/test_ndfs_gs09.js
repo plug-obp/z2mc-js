@@ -43,7 +43,7 @@ let result = ndfs_gs09(
     tr.isAccepting, 
     tr.configurationHashFn, tr.configurationEqFn);
 //trace = [1, 4, [5, 3, 1]]
-let expected = '{"verified":true,"trace":[1,4,5,3,1],"configuration_count":5}';
+let expected = '{"verified":false,"trace":[1,4,5,3,1],"configuration_count":5}';
 let got = JSON.stringify(result);
 console.log("test 1", expected == got);
 console.log(result);
@@ -56,7 +56,7 @@ result = ndfs_gs09(
     tr.isAccepting, 
     tr.configurationHashFn, tr.configurationEqFn);
 
-expected = '{"verified":true,"trace":[1,2,3,1],"configuration_count":3}';
+expected = '{"verified":false,"trace":[1,2,3,1],"configuration_count":3}';
 got = JSON.stringify(result);
 console.log("test 2", expected == got);
 console.log(result);
@@ -69,7 +69,7 @@ result = ndfs_gs09(
     tr.isAccepting, 
     tr.configurationHashFn, tr.configurationEqFn);
 
-expected = '{"verified":true,"trace":[1,2,3,1],"configuration_count":3}';
+expected = '{"verified":false,"trace":[1,2,3,1],"configuration_count":3}';
 got = JSON.stringify(result);
 console.log("test 3", expected == got);
 console.log(result);

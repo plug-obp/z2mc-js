@@ -97,7 +97,7 @@ function dfs1(initial, next, canonize, acceptingPredicate, known1, stack1, known
         initial, next, canonize,
         on_entry, (s,n,cn,m) => false, on_exit, memory, 
         addIfAbsent, stack1);
-    return {verified: !holds, trace: trace, configuration_count: cc};
+    return {verified: holds, trace: trace, configuration_count: cc};
 }
 
 //the second DFS checks the accepting predicate in preorder (on_entry)
@@ -111,6 +111,7 @@ function dfs2(seed, next, canonize, known, stack) {
             mem.holds = false;
             mem.witness = seed;
             mem.trace = stack.map(e => e.configuration).slice(1);
+            mem.trace.push(seed);
             return true;
         }
         return false;
