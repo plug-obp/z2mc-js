@@ -62,6 +62,9 @@ function CVWY92_Algorithm2(initial, next, canonize, acceptingPredicate, hashFn, 
 
 //the first DFS checks the accepting predicate in postorder (on_exit)
 function CVWY92_Algorithm2_dfs1(initial, next, canonize, acceptingPredicate, known1, stack1, known2, stack2) {
+    function addIfAbsent(n, nc) {
+        return known1.add(nc);
+    }
     function on_exit(n, frame, mem) {
         if (acceptingPredicate(n)) {
             let {holds, _, cc, trace} = CVWY92_Algorithm2_dfs2(n, next, canonize, known2, stack2);
@@ -83,12 +86,15 @@ function CVWY92_Algorithm2_dfs1(initial, next, canonize, acceptingPredicate, kno
     let {holds, witness, configuration_count, trace} = dataless_dfs_traversal(
         initial, next, canonize,
         (s,n,cn,m)=>false, (s,n,cn,m) => false, on_exit, memory, 
-        known1, stack1);
+        addIfAbsent, stack1);
     return {verified: !holds, trace: trace, configuration_count};
 }
 
 //the second DFS checks the accepting predicate in preorder (on_entry)
 function CVWY92_Algorithm2_dfs2(seed, next, canonize, known, stack) {
+    function addIfAbsent(n, nc) {
+        return known.add(nc);
+    }
     function on_entry(s,n,cn,mem) {
         //if seed ∈ next(s) then report violation
         if (next(n).find((e) => e === seed)) {
@@ -110,5 +116,5 @@ function CVWY92_Algorithm2_dfs2(seed, next, canonize, known, stack) {
     return dataless_dfs_traversal(
         initial, next, canonize,
         on_entry, (s,n,cn,m) => false, (n,frame,m)=>false, memory, 
-        known, stack);
+        addIfAbsent, stack);
 }

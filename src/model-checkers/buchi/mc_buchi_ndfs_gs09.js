@@ -24,7 +24,7 @@ import { dataless_dfs_traversal } from "../../algorithms/z_dataless_dfs.js";
 import { LinearScanHashSet      } from "../../datastructures/linear_scan_set.js"
 import { UnboundedStack         } from "../../datastructures/unbounded_stack.js";
 
-export {GaiserSchwoon_ndfs}
+export {ndfs_gs09}
 
 /**
  * The improved nested DFS algorithm from [1], Figure 1.
@@ -70,7 +70,7 @@ dfs₂(s, k)
     end for
  */
 
-function GaiserSchwoon_ndfs(initial, next, canonize, acceptingPredicate, hashFn, equalityFn) {
+function ndfs_gs09(initial, next, canonize, acceptingPredicate, hashFn, equalityFn) {
     //we need a map to store the colors
     // - configuration is white ⟺ never touched by dfs_blue 
     // - configuration is cyan ⟺ if its invocation of dfs_blue is still running (in on the stack_blue) and every cyan 
@@ -81,14 +81,14 @@ function GaiserSchwoon_ndfs(initial, next, canonize, acceptingPredicate, hashFn,
     let known      = new LinearScanHashSet(1024, hashFn, equalityFn, true);
     let stack_blue = new UnboundedStack(1024, 2);
     let stack_red  = new UnboundedStack(1024, 2);
-    return GaiserSchwoon_dfs_blue(initial, next, canonize, acceptingPredicate, known, stack_blue, stack_red);
+    return dfs_blue(initial, next, canonize, acceptingPredicate, known, stack_blue, stack_red);
 }
 
-function GaiserSchwoon_dfs_blue(initial, next, canonize, acceptingPredicate, known, stack_blue, stack_red) {
+function dfs_blue(initial, next, canonize, acceptingPredicate, known, stack_blue, stack_red) {
     //we recurse only if the color is white
-    function addIfAbsent(k) {
-        if (known.get(k) === null) {
-            known.add(k, Symbol.for('cyan'));
+    function addIfAbsent(n, nc) {
+        if (known.get(nc) === null) {
+            known.add(nc, Symbol.for('cyan'));
             return true;
         }
         return false;
@@ -99,7 +99,8 @@ function GaiserSchwoon_dfs_blue(initial, next, canonize, acceptingPredicate, kno
         && (acceptingPredicate(s) || acceptingPredicate(n))) {
             m.holds = false;
             m.witness = n;
-            m.trace = stack_blue.map(e => e.configuration).slice(1).push(n);
+            m.trace = stack_blue.map(e => e.configuration).slice(1);
+            m.trace.push(n);
             return true;
         }
         return false;
@@ -132,7 +133,7 @@ function GaiserSchwoon_dfs_blue(initial, next, canonize, acceptingPredicate, kno
         }
         //if n is an accepting state dfs_red
         if (acceptingPredicate(n)) {
-            const result = GaiserSchwoon_dfs_red(next(n), next, canonize, known, stack_red);
+            const result = dfs_red(next(n), next, canonize, known, stack_red);
             if (result.holds) {
                 known.add(frame.canonical, Symbol.for('red'));
                 return false;
@@ -167,11 +168,11 @@ function GaiserSchwoon_dfs_blue(initial, next, canonize, acceptingPredicate, kno
     return {verified: !holds, trace: trace, configuration_count: cc}
 }
 
-function GaiserSchwoon_dfs_red(initial, next, canonize, known, stack) {
+function dfs_red(initial, next, canonize, known, stack) {
     //we recurse only if the color is blue
-    function addIfAbsent(k) {
-        if (known.get(k) === Symbol.for('blue')) {
-            known.add(k, Symbol.for('red'));
+    function addIfAbsent(n, nc) {
+        if (known.get(nc) === Symbol.for('blue')) {
+            known.add(nc, Symbol.for('red'));
             return true;
         }
         return false;

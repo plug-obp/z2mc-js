@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import {GaiserSchwoon_ndfs} from "./model-checkers/buchi/mc_buchi_gaiser_schwoon09_ndfs.js"
+import {ndfs_gs09_cdlp05} from "./model-checkers/buchi/mc_buchi_ndfs_gs09_cdlp05.js"
 
 //create the model semantics
 let g = {
@@ -38,15 +38,26 @@ let tr = {
     configurationEqFn: (a, b) => a === b
 };
 
-console.log(Symbol.for('cyan') === Symbol.for('cyan'));
-
-let result = GaiserSchwoon_ndfs(
+let result = ndfs_gs09_cdlp05(
     tr.initial(), tr.next, (c)=>c, 
     tr.isAccepting, 
     tr.configurationHashFn, tr.configurationEqFn);
 //trace = [1, 4, [5, 3, 1]]
-const expected = '{"verified":true,"trace":[1,4,[5,3,1]],"configuration_count":5}';
-const got = JSON.stringify(result);
+let expected = '{"verified":true,"trace":[1,4,[5,3,1]],"configuration_count":5}';
+let got = JSON.stringify(result);
 console.log("test 1", expected == got);
+console.log(result);
+console.log(JSON.stringify(result));
+
+tr.isAccepting = (c) => c === 2;
+
+result = ndfs_gs09_cdlp05(
+    tr.initial(), tr.next, (c)=>c, 
+    tr.isAccepting, 
+    tr.configurationHashFn, tr.configurationEqFn);
+
+expected = '{"verified":true,"trace":[1,2,3,1],"configuration_count":3}';
+got = JSON.stringify(result);
+console.log("test 2", expected == got);
 console.log(result);
 console.log(JSON.stringify(result));
