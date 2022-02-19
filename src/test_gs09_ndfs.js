@@ -44,6 +44,9 @@ let result = GaiserSchwoon_ndfs(
     tr.initial(), tr.next, (c)=>c, 
     tr.isAccepting, 
     tr.configurationHashFn, tr.configurationEqFn);
-
+//trace = [1, 4, [5, 3, 1]]
+const expected = '{"verified":true,"trace":[1,4,[5,3,1]],"configuration_count":5}';
+const got = JSON.stringify(result);
+console.log("test 1", expected == got);
 console.log(result);
 console.log(JSON.stringify(result));
