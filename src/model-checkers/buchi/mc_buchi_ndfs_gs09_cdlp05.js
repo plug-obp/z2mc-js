@@ -27,7 +27,10 @@ import { UnboundedStack         } from "../../datastructures/unbounded_stack.js"
 export {ndfs_gs09_cdlp05}
 
 /**
- * The improved nested DFS algorithm from [1], Figure 1 with the optimization from [2] (Sec. 4.2)
+ * The improved nested DFS algorithm from [1], Figure 1 with the optimization from [2] (Sec. 4.2).
+ * The number of accepting states accumulated from the source to the current node is associated with all nodes on the stack.
+ * This way dfs blue can detect all recursive loops with accepting states.
+ * Dfs red is used only to analyze cross(sharing) links.
  * [1] Gaiser, Andreas, and Stefan Schwoon. 
  * "Comparison of algorithms for checking emptiness on Büchi automata." 
  * arXiv preprint arXiv:0910.3766 (2009).
