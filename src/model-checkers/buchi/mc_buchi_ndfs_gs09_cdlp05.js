@@ -119,7 +119,7 @@ function dfs_blue(initial, next, canonize, acceptingPredicate, known, stack_blue
             m.witness = n;
             m.trace = stack_blue.map(e => e.configuration).slice(1);
             m.trace.push(n);
-            m.trace.push(result.trace);
+            m.trace.push(...result.trace);
             return true;
         }
         known.add(frame.canonical, Symbol.for('blue'));
