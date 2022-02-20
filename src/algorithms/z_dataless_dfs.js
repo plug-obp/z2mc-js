@@ -62,7 +62,8 @@ function dataless_dfs_traversal (
             //on known - is called on sharing-links and back-loops
             const terminate = on_known(frame.configuration, neighbour, canonical_neighbour, memory);
             if (terminate) return memory;
-        }
+            continue;
+        } 
         
         stack.pop();
 

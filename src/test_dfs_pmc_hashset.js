@@ -42,11 +42,11 @@ console.log(JSON.stringify(result));
 result = dfs_hashset_predicate_mc_full(tr, (c) => true, (c,s) => c, (a, b) => a === b, (c) => c);
 console.log(JSON.stringify(result));
 
-//exclusion
+//exclusion -- should fail
 result = dfs_hashset_predicate_mc_full(tr, model.exclusion, (c,s) => c, (a, b) => a === b, (c) => c);
 console.log("exclusion " + JSON.stringify(result));
 
-//deadlock
+/*deadlock pass*/
 let deadlockPred = (c) => tr.next(c).length == 0
 result = dfs_hashset_predicate_mc_full(tr, deadlockPred, (c,s) => c, (a, b) => a === b, (c) => c);
 console.log("deadlock " + JSON.stringify(result));
@@ -61,11 +61,11 @@ console.log("deadlock " + JSON.stringify(result));
      next: (c) => model.ss[c],
  };
 
-//exclusion
+//exclusion pass
 result = dfs_hashset_predicate_mc_full(tr, model.exclusion, (c,s) => c, (a, b) => a === b, (c) => c);
 console.log("exclusion " + JSON.stringify(result));
 
-//deadlock
+//deadlock fail
 deadlockPred = (c) => tr.next(c).length == 0
 result = dfs_hashset_predicate_mc_full(tr, deadlockPred, (c,s) => c, (a, b) => a === b, (c) => c);
 console.log("deadlock " + JSON.stringify(result));
@@ -139,8 +139,9 @@ console.log("predicate under-approximation deadlock " + JSON.stringify(result));
 
 tr = {
     initial: () => [[0,0]],
-    next: (c)=> (c[0] <= 6 && c[1] <= 6) ? [[c[0]+1, c[1]], [c[0], c[1]+1]] : [],
+    next: (c)=> (c[0] <= 200 && c[1] <= 200) ? [[c[0]+1, c[1]], [c[0], c[1]+1]] : [],
 }
 
-result = dfs_hashset_predicate_mc_full(tr, (c)=>c[0]==5&&c[1]==2, (c,s) => c[0]+c[1], (a, b) => a[0] === b[0] && a[1]===b[1], (c)=>c);
+result = dfs_hashset_predicate_mc_full(tr, (c)=>c[0]==100&&c[1]==50, (c,s) => c[0]+c[1], (a, b) => a[0] === b[0] && a[1]===b[1], (c)=>c);
 console.log("two counters " + JSON.stringify(result));
+
