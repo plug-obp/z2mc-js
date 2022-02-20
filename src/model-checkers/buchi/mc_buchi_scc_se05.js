@@ -101,6 +101,25 @@ function couv_dfs(initial, next, canonize, acceptingPredicate, known, stack, roo
         if (roots.isEmpty()) return false;
         if (roots.peek().n === n) {
             roots.pop();
+
+            //TODO: the algorithm in [1] has a bug. we need to understand how to fix it.
+            //
+            console.log("-->"+ n);
+            if (acceptingPredicate(n)) {
+                m.holds = false
+                m.witness = n;
+                //the callstack has a path ```s₀ ⟶* u ⟶* s → t```
+                m.trace = stack.map(e => e.configuration).slice(1);
+                m.trace.push(n);
+                //TODO: to complete the cycle we need a path ```t ⟶* u```
+                //solution 1: simple DFS within the non-removed states starting at u 
+                    //(the current bit can be used to mark the visited states)
+                //solution 2: search for any state on the call stack whose number is at most t.dfsnum
+                    //this may lead to smaller counter examples but requires marking the states that are on the stack
+                return true;
+            }
+
+
             remove(n, frame.canonical);
         }
         return false;
