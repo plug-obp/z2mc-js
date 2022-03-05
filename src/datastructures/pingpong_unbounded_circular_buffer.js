@@ -76,16 +76,22 @@ function m_growIfFull() {
 
     //patch the circular buffer
     if (this.m_write_idx <= this.m_read_idx) {
+        
+        if (this.m_write_idx == 0) {
+            this.m_write_idx = capacity;
+        } 
         //if the block tail=[0,m_write_idx] is smaller than head=[m_read_idx, capacity] -> copy the tail after the head
-        if (this.m_write_idx <= capacity - this.m_read_idx) {
+        else if (this.m_write_idx <= (capacity - this.m_read_idx)) {
             this.m_items.copyWithin(capacity, 0, this.m_write_idx);
             if (this.m_barrier_idx < this.m_write_idx) {
                 this.m_barrier_idx = capacity + this.m_barrier_idx;
             }
             this.m_write_idx = capacity + this.m_write_idx;
-        } else { //if the block tail=[0,m_write_idx] is bigger than head=[m_read_idx, capacity] -> move the head towards the tail
+        }
+        //if the block tail=[0,m_write_idx] is bigger than head=[m_read_idx, capacity] -> move the head towards the tail 
+        else {
             let offset = this.m_items.length - (capacity - this.m_read_idx);
-            this.m_items.copyWithin(offset, this.m_read_idx, capacity-this.m_read_idx);
+            this.m_items.copyWithin(offset, this.m_read_idx, capacity);
             if (this.m_barrier_idx >= this.m_read_idx) {
                 this.m_barrier_idx = offset + (this.m_barrier_idx - this.m_read_idx);
             }
@@ -131,3 +137,72 @@ function m_toString() {
 // x.enqueue(7);
 
 // console.log(x.toString());
+
+
+
+// const ppcb = new PingPongCircularBuffer(5);
+
+// ppcb.enqueue("value" + 0);
+// console.log("enqueue", ppcb.size());
+// ppcb.enqueue("value" + 1);
+// console.log("enqueue", ppcb.size());
+// ppcb.enqueue("value" + 2);
+// console.log("enqueue", ppcb.size());
+// ppcb.enqueue("value" + 3);
+// console.log("enqueue", ppcb.size());
+// ppcb.enqueue("value" + 4);
+// console.log("enqueue", ppcb.size());
+// let p = ppcb.dequeue();
+// console.log("dequeue", p);
+// p = ppcb.dequeue();
+// console.log("dequeue", p);
+// p = ppcb.dequeue();
+// console.log("dequeue", p);
+
+// ppcb.enqueue("value" + 5);
+// console.log("enqueue", ppcb.size());
+// ppcb.enqueue("value" + 6);
+// console.log("enqueue", ppcb.size());
+// ppcb.enqueue("value" + 7);
+// console.log("enqueue", ppcb.size());
+// ppcb.enqueue("value" + 8);
+// console.log("enqueue", ppcb.size());
+
+// const actions = `enqueue
+// dequeue
+// enqueue
+// enqueue
+// enqueue
+// enqueue
+// dequeue
+// enqueue
+// enqueue
+// enqueue
+// enqueue
+// dequeue
+// dequeue
+// enqueue
+// enqueue
+// dequeue
+// dequeue
+// enqueue
+// enqueue
+// enqueue
+// enqueue
+// dequeue`.split("\n");
+
+// let i = 0;
+// for(const action of actions) {
+//         switch(action) {
+//                 case "enqueue":
+//                         ppcb.enqueue("value" + i++);
+//                         console.log(action, ppcb.size());
+//                         break;
+//                 case "dequeue": 
+//                         const r = ppcb.dequeue();
+//                         console.log(action, ppcb.size(), r);
+//                         break;
+//                 default:
+//                         throw "unknown action: " + action;
+//         }
+// }
