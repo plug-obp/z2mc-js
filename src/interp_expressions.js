@@ -120,3 +120,8 @@ function dfs(initial, next, known1, stack1) {
 
 let re = interpreter(initial, next, hashFn, equalityFn);
 console.log(re.stack);
+
+//TODO: comment attacher l'evaluation comme fanout de l'etat de l'interpreteur... pour construire une STR
+// il me faut un curseur ?... qui simule le pc 
+// l'etat du dfs peut etre ?
+// le DFS sur l'AST induit un ordre total qui maps sur le PC ?
