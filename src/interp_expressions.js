@@ -86,11 +86,10 @@ function dispatch(stack, object) {
 function interpreter(initial, next, hashFn, equalityFn) {
     let known1      = new LinearScanHashSet(1024, hashFn, equalityFn, false);
     let stack1      = new UnboundedStack(1024, 2);
-    return dfs1(initial, next, known1, stack1);
+    return dfs(initial, next, known1, stack1);
 }
 
-//the first DFS checks the accepting predicate in postorder (on_exit)
-function dfs1(initial, next, known1, stack1) {
+function dfs(initial, next, known1, stack1) {
     function addIfAbsent(n, nc) {
         return known1.add(nc);
     }
