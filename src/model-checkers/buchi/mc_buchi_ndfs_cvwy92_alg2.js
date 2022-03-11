@@ -72,6 +72,7 @@ function dfs1(initial, next, canonize, acceptingPredicate, known1, stack1, known
     }
     function on_entry(s,n,nc,m) {
         m.cc++;
+        return false;
     }
     function on_exit(n, frame, mem) {
         if (acceptingPredicate(n)) {
