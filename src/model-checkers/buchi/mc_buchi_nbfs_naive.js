@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-import { hashset_predicate_mc_full } from "../z_hashset_predicate_mc.js";
+import { bfs_hashset_predicate_mc_full } from "../z_hashset_predicate_mc.js";
 
 export {nbfs_naive}
 
@@ -52,12 +52,12 @@ function nbfs_naive(initial, next, canonize, acceptingPredicate, hashFn, equalit
         const iop = new Proxy(tr, PreInitializedProxyHandler(() => tr.next(c)));  
 
         const predicate = (x) => x === c;
-        const result = hashset_predicate_mc_full(iop, predicate, hashFn, equalityFn, Number.MAX_SAFE_INTEGER, canonize);
+        const result = bfs_hashset_predicate_mc_full(iop, predicate, hashFn, equalityFn, Number.MAX_SAFE_INTEGER, canonize);
         suffix = result.trace;
         //TODO: understand why it does not work with result.verified ?
         return result.trace.length > 0;
     };
-    let {verified, trace: prefix, configuration_count} = hashset_predicate_mc_full(tr, acceptanceCyclePredicate, hashFn, equalityFn, Number.MAX_SAFE_INTEGER, canonize);
+    let {verified, trace: prefix, configuration_count} = bfs_hashset_predicate_mc_full(tr, acceptanceCyclePredicate, hashFn, equalityFn, Number.MAX_SAFE_INTEGER, canonize);
 
     prefix.reverse();
     suffix.reverse();

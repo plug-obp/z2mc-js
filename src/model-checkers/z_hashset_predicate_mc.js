@@ -23,20 +23,20 @@
 import { LinearScanHashSet      } from "../datastructures/linear_scan_set.js"
 import { PingPongCircularBuffer } from "../datastructures/pingpong_unbounded_circular_buffer.js";
 import { UnboundedStack } from "../datastructures/unbounded_stack.js";
-import { dataless_predicate_mc, dfs_dataless_predicate_mc  } from "./z_dataless_predicate_mc.js"
+import { bfs_dataless_predicate_mc, dfs_dataless_predicate_mc  } from "./z_dataless_predicate_mc.js"
 
-export {hashset_predicate_mc_simple, hashset_predicate_mc_full, dfs_hashset_predicate_mc_full}
+export {bfs_hashset_predicate_mc_simple, bfs_hashset_predicate_mc_full, dfs_hashset_predicate_mc_full}
 
-function hashset_predicate_mc_full(tr, acceptingPredicate, hashFn, equalityFn, bound, canonize) {
+function bfs_hashset_predicate_mc_full(tr, acceptingPredicate, hashFn, equalityFn, bound, canonize) {
 
     let known       = new LinearScanHashSet(1024, hashFn, equalityFn, false);
     let frontier    = new PingPongCircularBuffer(1024);
     let parentTree  = new LinearScanHashSet(1024, hashFn, equalityFn, true); 
 
-    return dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound, canonize);
+    return bfs_dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound, canonize);
 }
 
-function hashset_predicate_mc_simple(tr, acceptingPredicate, bound) {
+function bfs_hashset_predicate_mc_simple(tr, acceptingPredicate, bound) {
 
     let hashFn      = (c) => tr.configurationHashFn(c);
     let equalityFn  = (a,b)=>tr.configurationEqFn(a,b);
@@ -45,7 +45,7 @@ function hashset_predicate_mc_simple(tr, acceptingPredicate, bound) {
     let parentTree  = new LinearScanHashSet(1024, hashFn, equalityFn, true); 
     let canonize    = (c) => c;                         //identity
 
-    return dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound, canonize);
+    return bfs_dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound, canonize);
 }
 
 function dfs_hashset_predicate_mc_full(tr, acceptingPredicate, hashFn, equalityFn, canonize) {

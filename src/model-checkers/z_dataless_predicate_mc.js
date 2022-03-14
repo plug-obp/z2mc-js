@@ -23,7 +23,7 @@
 import { dataless_bfs_traversal } from "../algorithms/z_dataless_bfs.js";
 import { dataless_dfs_traversal } from "../algorithms/z_dataless_dfs.js";
 
-export { dataless_predicate_mc, dfs_dataless_predicate_mc }
+export { bfs_dataless_predicate_mc, dfs_dataless_predicate_mc }
 
 /**
  * 
@@ -44,7 +44,7 @@ export { dataless_predicate_mc, dfs_dataless_predicate_mc }
  * @returns {(𝔹,Maybe(list C))}     (true, Nothing), (false, Some(list C))
  */
 
-function dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound=Number.MAX_SAFE_INTEGER, canonize = (n)=> n) {
+function bfs_dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound=Number.MAX_SAFE_INTEGER, canonize = (n)=> n) {
     let initial = tr.initial();
     let next    = (c) => tr.next(c);
     function on_node(s,n,cn,l,mem) {
