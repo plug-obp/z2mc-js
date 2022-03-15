@@ -66,11 +66,11 @@ async function dataless_bfs_traversal
             neighbours = await next(source);
         }
         for (let neighbour of neighbours) {
-            let canonical_neighbour = canonize(neighbour);
+            let canonical_neighbour = await canonize(neighbour);
             if (known.addIfAbsent(canonical_neighbour)) {
                 if (on_entry != null) {
                     //on_entry - on unknown
-                    let terminate = on_entry(source, neighbour, canonical_neighbour, layer, memory);
+                    let terminate = await on_entry(source, neighbour, canonical_neighbour, layer, memory);
                     if (terminate) return memory;
                 }
                 frontier.enqueue(neighbour);
