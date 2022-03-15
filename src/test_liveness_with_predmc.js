@@ -50,7 +50,7 @@ function PreInitializedProxyHandler(initialFn) {
 }
 
 let suffix = [];
-let acceptanceCyclePredicate = (c) => {
+let acceptanceCyclePredicate = async (c) => {
     //if not a buchi accepting-state return false
     if (!tr.isAccepting(c)) {
         return false;
@@ -59,12 +59,12 @@ let acceptanceCyclePredicate = (c) => {
     const iop = new Proxy(tr, PreInitializedProxyHandler(() => tr.next(c)));  
 
     const predicate = (x) => x === c;
-    const result = bfs_hashset_predicate_mc_simple(iop, predicate, Number.MAX_SAFE_INTEGER);
+    const result = await bfs_hashset_predicate_mc_simple(iop, predicate);
     suffix = result.trace;
     //TODO: understand why it does not work with result.verified ?
     return result.trace.length > 0;
 };
 
-let {verified, trace: prefix, configuration_count} = bfs_hashset_predicate_mc_simple(tr, acceptanceCyclePredicate, Number.MAX_SAFE_INTEGER);
+let {verified, trace: prefix, configuration_count} = await bfs_hashset_predicate_mc_simple(tr, acceptanceCyclePredicate);
 console.log(verified);
 console.log(JSON.stringify(prefix.reverse()) + " -- " + JSON.stringify(suffix.reverse()));

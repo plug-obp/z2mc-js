@@ -44,11 +44,12 @@ export { bfs_dataless_predicate_mc, dfs_dataless_predicate_mc }
  * @returns {(𝔹,Maybe(list C))}     (true, Nothing), (false, Some(list C))
  */
 
-function bfs_dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound=Number.MAX_SAFE_INTEGER, canonize = (n)=> n) {
-    let initial = tr.initial();
+async function bfs_dataless_predicate_mc(tr, canonize = (n)=> n, acceptingPredicate, known, frontier, parentTree) {
+    let initial = await tr.initial();
     let next    = (c) => tr.next(c);
-    function on_node(s,n,cn,l,mem) {
-        mem.holds = acceptingPredicate(n);
+
+    async function on_node(s,n,cn,mem) {
+        mem.holds = await acceptingPredicate(n);
         mem.witness = mem.holds ? n : null;
         mem.configuration_count++;
         if (!mem.parents.contains(n)) { mem.parents.add(n, s); }
@@ -60,7 +61,10 @@ function bfs_dataless_predicate_mc(tr, acceptingPredicate, known, frontier, pare
         configuration_count: 0, 
         parents: parentTree
     }            
-    let {holds, witness, configuration_count, parents} = dataless_bfs_traversal(initial, next, on_node, memory, known, frontier, bound, canonize)
+    let {holds, witness, configuration_count, parents} = await dataless_bfs_traversal(
+        initial, next, canonize, 
+        on_node, (s,n,cn,m) => false, (s,m) => false, memory,
+        (n, cn) => known.add(cn), frontier)
     if (holds) {
         let witnessTrace = getTrace(witness, parents);
         return {verified: false, trace: witnessTrace, configuration_count};
@@ -86,15 +90,13 @@ function bfs_dataless_predicate_mc(tr, acceptingPredicate, known, frontier, pare
     return trace;
 }
 
-function dfs_dataless_predicate_mc(tr, acceptingPredicate, known, stack, canonize = (n)=> n) {
+async function dfs_dataless_predicate_mc(tr, canonize = (n)=> n, acceptingPredicate, known, stack) {
     let initial = tr.initial();
     let next    = (c) => tr.next(c);
 
-    function addIfAbsent(n,nc) {
-        return known.add(nc);
-    }
-    function on_entry(s,n,cn,mem) {
-        if (acceptingPredicate(n)) {
+    async function on_entry(s,n,cn,mem) {
+        const status = await acceptingPredicate(n);
+        if (status) {
             mem.holds = false;
             mem.witness = n;
             mem.trace = stack.map(e => e.configuration).slice(1);
@@ -109,10 +111,10 @@ function dfs_dataless_predicate_mc(tr, acceptingPredicate, known, stack, canoniz
         configuration_count: 0, 
         trace: [],
     };     
-    let {holds, witness, configuration_count, trace} = dataless_dfs_traversal(
+    let {holds, witness, configuration_count, trace} = await dataless_dfs_traversal(
         initial, next, canonize,
         on_entry, (s,n,cn,m) => false, (s,frame,m) => false, memory, 
-        addIfAbsent, stack);
+        (n, cn) => known.add(cn), stack);
     
     return {verified: holds, trace: trace, configuration_count};
 }

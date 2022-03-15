@@ -37,27 +37,27 @@ function PreInitializedProxyHandler(initialFn) {
     };
 }
 
-function nbfs_naive(initial, next, canonize, acceptingPredicate, hashFn, equalityFn) {
+async function nbfs_naive(initial, next, canonize, acceptingPredicate, hashFn, equalityFn) {
     const tr = {
         initial: ()=>initial, 
         next: next
     }
     let suffix = [];
-    function acceptanceCyclePredicate(c) {
+    async function acceptanceCyclePredicate(c) {
         //if not a buchi accepting-state return false
-        if (!acceptingPredicate(c)) {
+        if (! await acceptingPredicate(c)) {
             return false;
         }
         //if a buchi accepting state, look for a cycle
         const iop = new Proxy(tr, PreInitializedProxyHandler(() => tr.next(c)));  
 
         const predicate = (x) => x === c;
-        const result = bfs_hashset_predicate_mc_full(iop, predicate, hashFn, equalityFn, Number.MAX_SAFE_INTEGER, canonize);
+        const result = await bfs_hashset_predicate_mc_full(iop, canonize, predicate, hashFn, equalityFn);
         suffix = result.trace;
         //TODO: understand why it does not work with result.verified ?
         return result.trace.length > 0;
     };
-    let {verified, trace: prefix, configuration_count} = bfs_hashset_predicate_mc_full(tr, acceptanceCyclePredicate, hashFn, equalityFn, Number.MAX_SAFE_INTEGER, canonize);
+    let {verified, trace: prefix, configuration_count} = await bfs_hashset_predicate_mc_full(tr, canonize, acceptanceCyclePredicate, hashFn, equalityFn);
 
     prefix.reverse();
     suffix.reverse();

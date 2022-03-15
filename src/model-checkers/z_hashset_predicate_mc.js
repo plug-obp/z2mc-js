@@ -27,16 +27,16 @@ import { bfs_dataless_predicate_mc, dfs_dataless_predicate_mc  } from "./z_datal
 
 export {bfs_hashset_predicate_mc_simple, bfs_hashset_predicate_mc_full, dfs_hashset_predicate_mc_full}
 
-function bfs_hashset_predicate_mc_full(tr, acceptingPredicate, hashFn, equalityFn, bound, canonize) {
+async function bfs_hashset_predicate_mc_full(tr, canonize, acceptingPredicate, hashFn, equalityFn) {
 
     let known       = new LinearScanHashSet(1024, hashFn, equalityFn, false);
     let frontier    = new PingPongCircularBuffer(1024);
     let parentTree  = new LinearScanHashSet(1024, hashFn, equalityFn, true); 
 
-    return bfs_dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound, canonize);
+    return bfs_dataless_predicate_mc(tr, canonize, acceptingPredicate, known, frontier, parentTree);
 }
 
-function bfs_hashset_predicate_mc_simple(tr, acceptingPredicate, bound) {
+async function bfs_hashset_predicate_mc_simple(tr, acceptingPredicate) {
 
     let hashFn      = (c) => tr.configurationHashFn(c);
     let equalityFn  = (a,b)=>tr.configurationEqFn(a,b);
@@ -45,15 +45,15 @@ function bfs_hashset_predicate_mc_simple(tr, acceptingPredicate, bound) {
     let parentTree  = new LinearScanHashSet(1024, hashFn, equalityFn, true); 
     let canonize    = (c) => c;                         //identity
 
-    return bfs_dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound, canonize);
+    return bfs_dataless_predicate_mc(tr, canonize, acceptingPredicate, known, frontier, parentTree);
 }
 
-function dfs_hashset_predicate_mc_full(tr, acceptingPredicate, hashFn, equalityFn, canonize) {
+async function dfs_hashset_predicate_mc_full(tr, canonize, acceptingPredicate, hashFn, equalityFn) {
 
-    let known       = new LinearScanHashSet(1024, hashFn, equalityFn, false);
+    let known    = new LinearScanHashSet(1024, hashFn, equalityFn, false);
     let stack    = new UnboundedStack(1024, 2);
 
-    return dfs_dataless_predicate_mc(tr, acceptingPredicate, known, stack, canonize);
+    return dfs_dataless_predicate_mc(tr, canonize, acceptingPredicate, known, stack);
 }
 
 /*

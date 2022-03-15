@@ -57,7 +57,7 @@ dfs₂(s, seed, k₂)
  * Formal methods in system design 1, no. 2 (1992): 275-288.
  */
 
-function ndfs_cvwy92_alg2(initial, next, canonize, acceptingPredicate, hashFn, equalityFn) {
+async function ndfs_cvwy92_alg2(initial, next, canonize, acceptingPredicate, hashFn, equalityFn) {
     let known1      = new LinearScanHashSet(1024, hashFn, equalityFn, false);
     let stack1      = new UnboundedStack(1024, 2);
     let known2      = new LinearScanHashSet(1024, hashFn, equalityFn, false);
@@ -66,17 +66,17 @@ function ndfs_cvwy92_alg2(initial, next, canonize, acceptingPredicate, hashFn, e
 }
 
 //the first DFS checks the accepting predicate in postorder (on_exit)
-function dfs1(initial, next, canonize, acceptingPredicate, known1, stack1, known2, stack2) {
+async function dfs1(initial, next, canonize, acceptingPredicate, known1, stack1, known2, stack2) {
     function addIfAbsent(n, nc) {
         return known1.add(nc);
     }
-    function on_entry(s,n,nc,m) {
+    async function on_entry(s,n,nc,m) {
         m.cc++;
         return false;
     }
-    function on_exit(n, frame, mem) {
-        if (acceptingPredicate(n)) {
-            let result = dfs2(n, next, canonize, known2, stack2);
+    async function on_exit(n, frame, mem) {
+        if (await acceptingPredicate(n)) {
+            let result = await dfs2(n, next, canonize, known2, stack2);
             if (result.holds) {
                 return false;
             }
@@ -94,7 +94,7 @@ function dfs1(initial, next, canonize, acceptingPredicate, known1, stack1, known
         trace: [],
         cc: 0, 
     };
-    let {holds, witness, trace, cc} = dataless_dfs_traversal(
+    let {holds, witness, trace, cc} = await dataless_dfs_traversal(
         initial, next, canonize,
         on_entry, (s,n,cn,m) => false, on_exit, memory, 
         addIfAbsent, stack1);
@@ -102,13 +102,13 @@ function dfs1(initial, next, canonize, acceptingPredicate, known1, stack1, known
 }
 
 //the second DFS checks the accepting predicate in preorder (on_entry)
-function dfs2(seed, next, canonize, known, stack) {
+async function dfs2(seed, next, canonize, known, stack) {
     function addIfAbsent(n, nc) {
         return known.add(nc);
     }
-    function on_entry(s,n,cn,mem) {
+    async function on_entry(s,n,cn,mem) {
         //if seed ∈ next(s) then report violation
-        if (next(n).find((e) => e === seed)) {
+        if (await next(n).find((e) => e === seed)) {
             mem.holds = false;
             mem.witness = seed;
             mem.trace = stack.map(e => e.configuration).slice(1);

@@ -51,7 +51,7 @@ async function dataless_dfs_traversal (
             const neighbour = frame.neighbours[frame.index++];
             const canonical_neighbour = await canonize(neighbour);
 
-            if (addIfAbsent(neighbour, canonical_neighbour)) {
+            if (await addIfAbsent(neighbour, canonical_neighbour)) {
                 stack.push( { configuration: neighbour, neighbours: await next(neighbour), index: 0} );
                 //on unknown
                 const terminate = await on_entry(frame.configuration, neighbour, canonical_neighbour, memory);
