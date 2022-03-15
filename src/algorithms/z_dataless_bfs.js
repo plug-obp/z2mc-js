@@ -42,7 +42,7 @@ export { dataless_bfs_traversal }
  * @param {*} canonize 
  * @returns {γ} memory
  */
-function dataless_bfs_traversal
+async function dataless_bfs_traversal
 (
     initial, next,
     on_entry, memory,
@@ -63,7 +63,7 @@ function dataless_bfs_traversal
             atStart = false;
         } else {
             source = frontier.dequeue();
-            neighbours = next(source);
+            neighbours = await next(source);
         }
         for (let neighbour of neighbours) {
             let canonical_neighbour = canonize(neighbour);

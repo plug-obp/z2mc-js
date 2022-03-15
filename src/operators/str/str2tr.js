@@ -29,11 +29,11 @@ class STR2TR {
     initial() {
         return this.operand.initial();
     }
-    next(source) {
+    async next(source) {
         let tr_targets = [];
-        let actions = this.operand.actions(source);
+        let actions = await this.operand.actions(source);
         for (let action of actions) {
-            let targets = this.operand.execute(action, source);
+            let targets = await this.operand.execute(action, source);
             tr_targets.push(...targets);
         }
         return tr_targets;
