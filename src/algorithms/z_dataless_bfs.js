@@ -44,18 +44,15 @@ export { dataless_bfs_traversal }
  */
 function dataless_bfs_traversal
 (
-    initial, next,
-    on_entry, memory,
-    known,
-    frontier,
-    bound,
-    canonize
+    initial, next, canonize,
+    on_entry, on_known, on_exit, memory,
+    addIfAbsent,
+    frontier
 )
 {
     let atStart  = true;
-    let layer    = 0;
     
-    while ((!frontier.isEmpty() || atStart) && layer < bound) {
+    while ((!frontier.isEmpty() || atStart)) {
         let source = null;
         let neighbours = null;
         if (atStart) {
@@ -65,28 +62,23 @@ function dataless_bfs_traversal
             source = frontier.dequeue();
             neighbours = next(source);
         }
-        for (let neighbour of neighbours) {
-            let canonical_neighbour = canonize(neighbour);
-            if (known.addIfAbsent(canonical_neighbour)) {
-                if (on_entry != null) {
-                    //on_entry - on unknown
-                    let terminate = on_entry(source, neighbour, canonical_neighbour, layer, memory);
-                    if (terminate) return memory;
-                }
+        for (const neighbour of neighbours) {
+            const canonical_neighbour = canonize(neighbour);
+            if (addIfAbsent(neighbour, canonical_neighbour)) {
                 frontier.enqueue(neighbour);
+                //on unknown
+                const terminate = on_entry(source, neighbour, canonical_neighbour, memory);
+                if (terminate) return memory;
+                continue;
             }
             //on_known - is called on sharing-links and back-loops
-            //const terminate = on_known(frame.configuration, neighbour, canonical_neighbour, memory);
-            //if (terminate) return memory;
+            const terminate = on_known(source, neighbour, canonical_neighbour, memory);
+            if (terminate) return memory;
+            continue;
         }
         //on_exit it is called after all node children are in the frontier
-        //const terminate = on_exit(frame.configuration, frame, memory);
-        //if (terminate) return memory;
-
-        if (frontier.layerChanged()) {
-            frontier.markLayer();
-            layer++;
-        }
+        const terminate = on_exit(source, memory);
+        if (terminate) return memory;
     }
     return memory;
 }

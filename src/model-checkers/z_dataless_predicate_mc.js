@@ -44,10 +44,15 @@ export { bfs_dataless_predicate_mc, dfs_dataless_predicate_mc }
  * @returns {(𝔹,Maybe(list C))}     (true, Nothing), (false, Some(list C))
  */
 
-function bfs_dataless_predicate_mc(tr, acceptingPredicate, known, frontier, parentTree, bound=Number.MAX_SAFE_INTEGER, canonize = (n)=> n) {
+function bfs_dataless_predicate_mc(tr, canonize = (n)=> n, acceptingPredicate, known, frontier, parentTree) {
     let initial = tr.initial();
     let next    = (c) => tr.next(c);
-    function on_node(s,n,cn,l,mem) {
+
+    function addIfAbsent(n,nc) {
+        return known.add(nc);
+    }
+
+    function on_node(s,n,cn,mem) {
         mem.holds = acceptingPredicate(n);
         mem.witness = mem.holds ? n : null;
         mem.configuration_count++;
@@ -60,7 +65,10 @@ function bfs_dataless_predicate_mc(tr, acceptingPredicate, known, frontier, pare
         configuration_count: 0, 
         parents: parentTree
     }            
-    let {holds, witness, configuration_count, parents} = dataless_bfs_traversal(initial, next, on_node, memory, known, frontier, bound, canonize)
+    let {holds, witness, configuration_count, parents} = dataless_bfs_traversal(
+        initial, next, canonize,
+        on_node, (s,n,cn,m) => false, (s,m) => false, memory, 
+        addIfAbsent, frontier)
     if (holds) {
         let witnessTrace = getTrace(witness, parents);
         return {verified: false, trace: witnessTrace, configuration_count};
@@ -86,7 +94,7 @@ function bfs_dataless_predicate_mc(tr, acceptingPredicate, known, frontier, pare
     return trace;
 }
 
-function dfs_dataless_predicate_mc(tr, acceptingPredicate, known, stack, canonize = (n)=> n) {
+function dfs_dataless_predicate_mc(tr, canonize = (n)=> n, acceptingPredicate, known, stack) {
     let initial = tr.initial();
     let next    = (c) => tr.next(c);
 
