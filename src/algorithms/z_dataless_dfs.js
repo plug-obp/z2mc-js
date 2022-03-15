@@ -38,7 +38,7 @@ export {dataless_dfs_traversal}
  * @param {C → α}           canonize
  * @returns {γ}             the memory
  */
-function dataless_dfs_traversal (
+async function dataless_dfs_traversal (
     initial, next, canonize,            // graph related
     on_entry, on_known, on_exit, memory,// algorithm related
     addIfAbsent,
@@ -49,25 +49,25 @@ function dataless_dfs_traversal (
         const frame = stack.peek();
         if ( frame.index < frame.neighbours.length ) {
             const neighbour = frame.neighbours[frame.index++];
-            const canonical_neighbour = canonize(neighbour);
+            const canonical_neighbour = await canonize(neighbour);
 
             if (addIfAbsent(neighbour, canonical_neighbour)) {
-                stack.push( { configuration: neighbour, neighbours: next(neighbour), index: 0} );
+                stack.push( { configuration: neighbour, neighbours: await next(neighbour), index: 0} );
                 //on unknown
-                const terminate = on_entry(frame.configuration, neighbour, canonical_neighbour, memory);
+                const terminate = await on_entry(frame.configuration, neighbour, canonical_neighbour, memory);
                 if (terminate) return memory;
                 continue;
             }
 
             //on known - is called on sharing-links and back-loops
-            const terminate = on_known(frame.configuration, neighbour, canonical_neighbour, memory);
+            const terminate = await on_known(frame.configuration, neighbour, canonical_neighbour, memory);
             if (terminate) return memory;
             continue;
         } 
         
         stack.pop();
 
-        const terminate = on_exit(frame.configuration, frame, memory);
+        const terminate = await on_exit(frame.configuration, frame, memory);
         if (terminate) return memory;
     }
     return memory;
