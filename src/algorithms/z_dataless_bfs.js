@@ -52,7 +52,7 @@ function dataless_bfs_traversal
 {
     let atStart  = true;
     
-    while ((!frontier.isEmpty() || atStart)) {
+    while (!frontier.isEmpty() || atStart) {
         let source = null;
         let neighbours = null;
         if (atStart) {
