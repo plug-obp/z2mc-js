@@ -39,7 +39,7 @@ let property = test_true();
 let propertySemantics = new DependentNASemantics(property);
 let productSemantics = new KripkeBuchiAsymmetricSynchronousProductSemantics(modelSemantics, propertySemantics);
 let tr = new STR2TR(productSemantics);
-let result = bfs_hashset_predicate_mc_simple(tr, (c)=>false, Number.MAX_SAFE_INTEGER);
+let result = await bfs_hashset_predicate_mc_simple(tr, (c)=>false);
 console.log(JSON.stringify(result));
 
 
@@ -50,17 +50,17 @@ productSemantics = new KripkeBuchiAsymmetricSynchronousProductSemantics(modelSem
 tr = new STR2TR(productSemantics);
 
 //no accepting state -- explore the whole statespace
-result = bfs_hashset_predicate_mc_simple(tr, (c)=>false, Number.MAX_SAFE_INTEGER);
+result = await bfs_hashset_predicate_mc_simple(tr, (c)=>false);
 console.log("no accepting" + JSON.stringify(result));
 
-result = bfs_hashset_predicate_mc_simple(tr, (c)=>tr.isAccepting(c), Number.MAX_SAFE_INTEGER);
+result = await bfs_hashset_predicate_mc_simple(tr, (c)=>tr.isAccepting(c));
 console.log(JSON.stringify(result));
 
 property = traffic_light_observer_true();
 propertySemantics = new DependentNASemantics(property);
 productSemantics = new KripkeBuchiAsymmetricSynchronousProductSemantics(modelSemantics, propertySemantics);
 tr = new STR2TR(productSemantics);
-result = bfs_hashset_predicate_mc_simple(tr, (c)=>tr.isAccepting(c), Number.MAX_SAFE_INTEGER);
+result = await bfs_hashset_predicate_mc_simple(tr, (c)=>tr.isAccepting(c));
 console.log(JSON.stringify(result));
 
 //State-event verification
@@ -68,23 +68,23 @@ property = test_true();
 propertySemantics = new DependentNASemantics(property);
 productSemantics = new StateEventAsymmetricSynchronousProductSemantics(modelSemantics, propertySemantics);
 tr = new STR2TR(productSemantics);
-result = bfs_hashset_predicate_mc_simple(tr, (c) => tr.isAccepting(c), Number.MAX_SAFE_INTEGER);
+result = await bfs_hashset_predicate_mc_simple(tr, (c) => tr.isAccepting(c));
 console.log(JSON.stringify(result));
 
 property = se_traffic_light_observer_false();
 propertySemantics = new DependentNASemantics(property);
 productSemantics = new StateEventAsymmetricSynchronousProductSemantics(modelSemantics, propertySemantics);
 tr = new STR2TR(productSemantics);
-result = bfs_hashset_predicate_mc_simple(tr, (c) => tr.isAccepting(c), Number.MAX_SAFE_INTEGER);
+result = await bfs_hashset_predicate_mc_simple(tr, (c) => tr.isAccepting(c));
 console.log(JSON.stringify(result));
 
 //no accepting state -- explore the whole statespace
-result = bfs_hashset_predicate_mc_simple(tr, (c)=>false, Number.MAX_SAFE_INTEGER);
+result = await bfs_hashset_predicate_mc_simple(tr, (c)=>false);
 console.log("no accepting" + JSON.stringify(result));
 
 property = se_traffic_light_observer_true();
 propertySemantics = new DependentNASemantics(property);
 productSemantics = new StateEventAsymmetricSynchronousProductSemantics(modelSemantics, propertySemantics);
 tr = new STR2TR(productSemantics);
-result = bfs_hashset_predicate_mc_simple(tr, (c) => tr.isAccepting(c), Number.MAX_SAFE_INTEGER);
+result = await bfs_hashset_predicate_mc_simple(tr, (c) => tr.isAccepting(c));
 console.log(JSON.stringify(result));

@@ -70,7 +70,7 @@ dfs₂(s, k)
     end for
  */
 
-function ndfs_gs09(initial, next, canonize, acceptingPredicate, hashFn, equalityFn) {
+async function ndfs_gs09(initial, next, canonize, acceptingPredicate, hashFn, equalityFn) {
     //we need a map to store the colors
     // - configuration is white ⟺ never touched by dfs_blue 
     // - configuration is cyan ⟺ if its invocation of dfs_blue is still running (in on the stack_blue) and every cyan 
@@ -84,7 +84,7 @@ function ndfs_gs09(initial, next, canonize, acceptingPredicate, hashFn, equality
     return dfs_blue(initial, next, canonize, acceptingPredicate, known, stack_blue, stack_red);
 }
 
-function dfs_blue(initial, next, canonize, acceptingPredicate, known, stack_blue, stack_red) {
+async function dfs_blue(initial, next, canonize, acceptingPredicate, known, stack_blue, stack_red) {
     //we recurse only if the color is white
     function addIfAbsent(n, nc) {
         if (known.get(nc) === null) {
@@ -94,9 +94,9 @@ function dfs_blue(initial, next, canonize, acceptingPredicate, known, stack_blue
         return false;
     }
 
-    function hasLoop(s, n, cn, m) {
+    async function hasLoop(s, n, cn, m) {
         if (known.get(cn) === Symbol.for('cyan')
-        && (acceptingPredicate(s) || acceptingPredicate(n))) {
+        && (await acceptingPredicate(s) || await acceptingPredicate(n))) {
             m.holds = false;
             m.witness = n;
             m.trace = stack_blue.map(e => e.configuration).slice(1);
@@ -115,8 +115,8 @@ function dfs_blue(initial, next, canonize, acceptingPredicate, known, stack_blue
         return false;
     }
 
-    function on_known(s, n, cn, m) {
-        if (hasLoop(s, n, cn, m)) return true;
+    async function on_known(s, n, cn, m) {
+        if (await hasLoop(s, n, cn, m)) return true;
         //if (n) is not red,
         //the tell its parent (s) it has at least one non red child
         if (known.get(cn) !== Symbol.for('red')) {
@@ -125,15 +125,15 @@ function dfs_blue(initial, next, canonize, acceptingPredicate, known, stack_blue
         return false;
     }
 
-    function on_exit(n, frame, m) {
+    async function on_exit(n, frame, m) {
         //if all my children are red, make myself red
         if (frame.allRed === true) {
             known.add(frame.canonical, Symbol.for('red'));
             return false;
         }
         //if n is an accepting state dfs_red
-        if (acceptingPredicate(n)) {
-            const result = dfs_red(next(n), next, canonize, known, stack_red);
+        if (await acceptingPredicate(n)) {
+            const result = await dfs_red(next(n), next, canonize, known, stack_red);
             if (result.holds) {
                 known.add(frame.canonical, Symbol.for('red'));
                 return false;
@@ -159,7 +159,7 @@ function dfs_blue(initial, next, canonize, acceptingPredicate, known, stack_blue
         trace: [],
         cc: 0,
     }
-    let {holds, witness, trace, cc} = dataless_dfs_traversal(
+    let {holds, witness, trace, cc} = await dataless_dfs_traversal(
         initial, next, canonize,
         on_entry, on_known, on_exit, memory,
         addIfAbsent,
@@ -168,7 +168,7 @@ function dfs_blue(initial, next, canonize, acceptingPredicate, known, stack_blue
     return {verified: holds, trace: trace, configuration_count: cc}
 }
 
-function dfs_red(initial, next, canonize, known, stack) {
+async function dfs_red(initial, next, canonize, known, stack) {
     //we recurse only if the color is blue
     function addIfAbsent(n, nc) {
         if (known.get(nc) === Symbol.for('blue')) {
@@ -194,11 +194,10 @@ function dfs_red(initial, next, canonize, known, stack) {
         }
         return false;
     }
-    memory = dataless_dfs_traversal(
+    return dataless_dfs_traversal(
         initial, next, canonize,
         (s,n,cn,m) => false, on_known, (n,frame,m)=>false, memory,
         addIfAbsent, 
         stack
     );
-    return memory;
 }

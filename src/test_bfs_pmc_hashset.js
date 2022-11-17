@@ -35,20 +35,20 @@ let tr = {
  */
 console.log("--->ALICE && BOB 0")
 // nothing
-let result = bfs_hashset_predicate_mc_full(tr, (c) => false, (c,s) => c, (a, b) => a === b, Number.MAX_SAFE_INTEGER, (c) => c);
+let result = await bfs_hashset_predicate_mc_full(tr, (c) => c, (c) => false, (c,s) => c, (a, b) => a === b);
 console.log(JSON.stringify(result));
 
 //everything
-result = bfs_hashset_predicate_mc_full(tr, (c) => true, (c,s) => c, (a, b) => a === b, Number.MAX_SAFE_INTEGER, (c) => c);
+result = await bfs_hashset_predicate_mc_full(tr, (c) => c, (c) => true, (c,s) => c, (a, b) => a === b);
 console.log(JSON.stringify(result));
 
 //exclusion
-result = bfs_hashset_predicate_mc_full(tr, model.exclusion, (c,s) => c, (a, b) => a === b, Number.MAX_SAFE_INTEGER, (c) => c);
+result = await bfs_hashset_predicate_mc_full(tr, (c) => c, model.exclusion, (c,s) => c, (a, b) => a === b);
 console.log("exclusion " + JSON.stringify(result));
 
 //deadlock
 let deadlockPred = (c) => tr.next(c).length == 0
-result = bfs_hashset_predicate_mc_full(tr, deadlockPred, (c,s) => c, (a, b) => a === b, Number.MAX_SAFE_INTEGER, (c) => c);
+result = await bfs_hashset_predicate_mc_full(tr, (c) => c, deadlockPred, (c,s) => c, (a, b) => a === b);
 console.log("deadlock " + JSON.stringify(result));
 
 /**
@@ -62,12 +62,12 @@ console.log("deadlock " + JSON.stringify(result));
  };
 
 //exclusion
-result = bfs_hashset_predicate_mc_full(tr, model.exclusion, (c,s) => c, (a, b) => a === b, Number.MAX_SAFE_INTEGER, (c) => c);
+result = await bfs_hashset_predicate_mc_full(tr, (c) => c, model.exclusion, (c,s) => c, (a, b) => a === b);
 console.log("exclusion " + JSON.stringify(result));
 
 //deadlock
 deadlockPred = (c) => tr.next(c).length == 0
-result = bfs_hashset_predicate_mc_full(tr, deadlockPred, (c,s) => c, (a, b) => a === b, Number.MAX_SAFE_INTEGER, (c) => c);
+result = await bfs_hashset_predicate_mc_full(tr, (c) => c, deadlockPred, (c,s) => c, (a, b) => a === b);
 console.log("deadlock " + JSON.stringify(result));
 
 /**
@@ -82,12 +82,12 @@ console.log("deadlock " + JSON.stringify(result));
 
 
 //exclusion
-result = bfs_hashset_predicate_mc_full(tr, model.exclusion, (c,s) => c, (a, b) => a === b, Number.MAX_SAFE_INTEGER, (c) => c);
+result = await bfs_hashset_predicate_mc_full(tr, (c) => c, model.exclusion, (c,s) => c, (a, b) => a === b);
 console.log("exclusion " + JSON.stringify(result));
 
 //deadlock
 deadlockPred = (c) => tr.next(c).length == 0
-result = bfs_hashset_predicate_mc_full(tr, deadlockPred, (c,s) => c, (a, b) => a === b, Number.MAX_SAFE_INTEGER, (c) => c);
+result = await bfs_hashset_predicate_mc_full(tr, (c) => c, deadlockPred, (c,s) => c, (a, b) => a === b);
 console.log("deadlock " + JSON.stringify(result));
 
 /**
@@ -101,12 +101,12 @@ console.log("deadlock " + JSON.stringify(result));
  };
 
 //exclusion
-result = bfs_hashset_predicate_mc_full(tr, model.exclusion, (c,s) => c, (a, b) => a === b, Number.MAX_SAFE_INTEGER, (c) => c);
+result = await bfs_hashset_predicate_mc_full(tr, (c) => c, model.exclusion, (c,s) => c, (a, b) => a === b);
 console.log("exclusion " + JSON.stringify(result));
 
 //deadlock
 deadlockPred = (c) => tr.next(c).length == 0
-result = bfs_hashset_predicate_mc_full(tr, deadlockPred, (c,s) => c, (a, b) => a === b, Number.MAX_SAFE_INTEGER, (c) => c);
+result = await bfs_hashset_predicate_mc_full(tr, (c) => c, deadlockPred, (c,s) => c, (a, b) => a === b);
 console.log("deadlock " + JSON.stringify(result));
 
 /**
@@ -116,21 +116,21 @@ deadlockPred = (c) => tr.next(c).length == 0;
 let hash = (c,s) => c%8;
 let bloom_size = 3;
 let abstraction = (c) => hash(c) % bloom_size;
-result = bfs_hashset_predicate_mc_full(tr, deadlockPred, (c,s) => c, (a, b) => a === b, Number.MAX_SAFE_INTEGER, abstraction);
+result = await bfs_hashset_predicate_mc_full(tr, abstraction, deadlockPred, (c,s) => c, (a, b) => a === b);
 console.log("bitstate deadlock " + JSON.stringify(result));
 
 /**
  * hashcompaction, works perfectly with our implementation.
  */
 abstraction = (c) => hash(c);
-result = bfs_hashset_predicate_mc_full(tr, deadlockPred, (c,s) => c, (a, b) => a === b, Number.MAX_SAFE_INTEGER, abstraction);
+result = await bfs_hashset_predicate_mc_full(tr, abstraction, deadlockPred, (c,s) => c, (a, b) => a === b);
 console.log("hashcompaction deadlock " + JSON.stringify(result));
 
 /**
  * Predicate abstraction
  */
 abstraction = (c) => [model.aCS, model.bCS];
-result = bfs_hashset_predicate_mc_full(tr, deadlockPred, (c,s) => c[0]+c[1], (a, b) => a[0] === b[0] && a[1]===b[1], Number.MAX_SAFE_INTEGER, abstraction);
+result = await bfs_hashset_predicate_mc_full(tr, abstraction, deadlockPred, (c,s) => c[0]+c[1], (a, b) => a[0] === b[0] && a[1]===b[1]);
 console.log("predicate under-approximation deadlock " + JSON.stringify(result));
 
 /**
@@ -142,5 +142,5 @@ tr = {
     next: (c)=>(c[0] <= 200 && c[1] <= 200) ? [[c[0]+1, c[1]], [c[0], c[1]+1]] : [],
 }
 
-result = bfs_hashset_predicate_mc_full(tr, (c)=>c[0]==100&&c[1]==50, (c,s) => c[0]+c[1], (a, b) => a[0] === b[0] && a[1]===b[1], Number.MAX_SAFE_INTEGER, (c)=>c);
+result = await bfs_hashset_predicate_mc_full(tr, (c) => c, (c)=>c[0]==100&&c[1]==50, (c,s) => c[0]+c[1], (a, b) => a[0] === b[0] && a[1]===b[1]);
 console.log("two counters " + JSON.stringify(result));

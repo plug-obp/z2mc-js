@@ -38,7 +38,7 @@ let tr = {
     configurationEqFn: (a, b) => a === b
 };
 
-let result = nbfs_naive(
+let result = await nbfs_naive(
     tr.initial(), tr.next, (c)=>c, 
     tr.isAccepting, 
     tr.configurationHashFn, tr.configurationEqFn);
@@ -51,7 +51,7 @@ console.log(JSON.stringify(result));
 
 tr.isAccepting = (c) => c === 2;
 
-result = nbfs_naive(
+result = await nbfs_naive(
     tr.initial(), tr.next, (c)=>c, 
     tr.isAccepting, 
     tr.configurationHashFn, tr.configurationEqFn);
@@ -64,7 +64,7 @@ console.log(JSON.stringify(result));
 
 tr.isAccepting = (c) => c === 3;
 
-result = nbfs_naive(
+result = await nbfs_naive(
     tr.initial(), tr.next, (c)=>c, 
     tr.isAccepting, 
     tr.configurationHashFn, tr.configurationEqFn);

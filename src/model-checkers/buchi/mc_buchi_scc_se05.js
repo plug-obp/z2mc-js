@@ -35,14 +35,14 @@ export {scc_se05}
  * Springer, Berlin, Heidelberg, 2005.
  */
 
-function scc_se05(initial, next, canonize, acceptingPredicate, hashFn, equalityFn) {
+async function scc_se05(initial, next, canonize, acceptingPredicate, hashFn, equalityFn) {
     const known  = new LinearScanHashSet(1024, hashFn, equalityFn, true);
     const stack  = new UnboundedStack(1024, 2);
     const roots  = new UnboundedStack(1024, 2);
     return couv_dfs(initial, next, canonize, acceptingPredicate, known, stack, roots);
 }
 
-function couv_dfs(initial, next, canonize, acceptingPredicate, known, stack, roots) {
+async function couv_dfs(initial, next, canonize, acceptingPredicate, known, stack, roots) {
     const memory = {
         count: 0,
         holds: true,
@@ -67,7 +67,7 @@ function couv_dfs(initial, next, canonize, acceptingPredicate, known, stack, roo
         return false;
     }
 
-    function on_known(s, t, tc, m) {
+    async function on_known(s, t, tc, m) {
         const value = known.get(tc);
         if (value.current === true) {
             let u;
@@ -76,7 +76,7 @@ function couv_dfs(initial, next, canonize, acceptingPredicate, known, stack, roo
                 const pair = roots.pop();
                 u = pair.n;
                 uc = pair.nc;
-                if (acceptingPredicate(u)) {
+                if (await acceptingPredicate(u)) {
                     m.holds = false
                     m.witness = u;
                     //the callstack has a path ```s₀ ⟶* u ⟶* s → t```
@@ -95,7 +95,7 @@ function couv_dfs(initial, next, canonize, acceptingPredicate, known, stack, roo
         return false;
     }
 
-    function on_exit(n, frame, m) {
+    async function on_exit(n, frame, m) {
         if (n === null) return false;
         memory.count--;
         if (roots.isEmpty()) return false;
@@ -105,7 +105,7 @@ function couv_dfs(initial, next, canonize, acceptingPredicate, known, stack, roo
             //TODO: the algorithm in [1] has a bug. we need to understand how to fix it.
             //
             console.log("-->"+ n);
-            if (acceptingPredicate(n)) {
+            if (await acceptingPredicate(n)) {
                 m.holds = false
                 m.witness = n;
                 //the callstack has a path ```s₀ ⟶* u ⟶* s → t```
@@ -120,23 +120,23 @@ function couv_dfs(initial, next, canonize, acceptingPredicate, known, stack, roo
             }
 
 
-            remove(n, frame.canonical);
+            await remove(n, frame.canonical);
         }
         return false;
     }
 
     //TODO: the remove function could use the dfs instead of recursivity
-    function remove(s, sc) {
+    async function remove(s, sc) {
         const value = known.get(sc);
         if (value === null || value.current !== true) return;
         value.current = false;
         for (const t of next(s)) {
-            remove(t, canonize(t));
+            remove(t, await canonize(t));
         }
 
     }
 
-    let {count, holds, witness, trace, cc} = dataless_dfs_traversal(
+    let {count, holds, witness, trace, cc} = await dataless_dfs_traversal(
         initial, next, canonize,
         on_entry, on_known, on_exit, memory,
         addIfAbsent, stack

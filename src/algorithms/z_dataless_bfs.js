@@ -44,18 +44,15 @@ export { dataless_bfs_traversal }
  */
 async function dataless_bfs_traversal
 (
-    initial, next,
-    on_entry, memory,
-    known,
+    initial, next, canonize,
+    on_entry, on_known, on_exit, memory,
+    addIfAbsent,
     frontier,
-    bound,
-    canonize
 )
 {
     let atStart  = true;
-    let layer    = 0;
     
-    while ((!frontier.isEmpty() || atStart) && layer < bound) {
+    while (!frontier.isEmpty() || atStart) {
         let source = null;
         let neighbours = null;
         if (atStart) {
@@ -67,26 +64,22 @@ async function dataless_bfs_traversal
         }
         for (let neighbour of neighbours) {
             let canonical_neighbour = await canonize(neighbour);
-            if (known.addIfAbsent(canonical_neighbour)) {
-                if (on_entry != null) {
-                    //on_entry - on unknown
-                    let terminate = await on_entry(source, neighbour, canonical_neighbour, layer, memory);
-                    if (terminate) return memory;
-                }
+            if (await addIfAbsent(neighbour, canonical_neighbour)) {
                 frontier.enqueue(neighbour);
+
+                //on unknown
+                const terminate = await on_entry(source, neighbour, canonical_neighbour, memory);
+                if (terminate) return memory;
+                continue
             }
             //on_known - is called on sharing-links and back-loops
-            //const terminate = on_known(frame.configuration, neighbour, canonical_neighbour, memory);
-            //if (terminate) return memory;
+            const terminate = await on_known(source, neighbour, canonical_neighbour, memory);
+            if (terminate) return memory;
+            continue;
         }
         //on_exit it is called after all node children are in the frontier
-        //const terminate = on_exit(frame.configuration, frame, memory);
-        //if (terminate) return memory;
-
-        if (frontier.layerChanged()) {
-            frontier.markLayer();
-            layer++;
-        }
+        const terminate = await on_exit(source, memory);
+        if (terminate) return memory;
     }
     return memory;
 }

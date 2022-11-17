@@ -38,7 +38,7 @@ let tr = {
     configurationEqFn: (a, b) => a === b
 };
 
-let result = scc_se05(
+let result = await scc_se05(
     tr.initial(), tr.next, (c)=>c, 
     tr.isAccepting, 
     tr.configurationHashFn, tr.configurationEqFn);
@@ -51,7 +51,7 @@ console.log(JSON.stringify(result));
 
 tr.isAccepting = (c) => c === 2;
 
-result = scc_se05(
+result = await scc_se05(
     tr.initial(), tr.next, (c)=>c, 
     tr.isAccepting, 
     tr.configurationHashFn, tr.configurationEqFn);
@@ -64,7 +64,7 @@ console.log(JSON.stringify(result));
 
 tr.isAccepting = (c) => c === 3;
 
-result = scc_se05(
+result = await scc_se05(
     tr.initial(), tr.next, (c)=>c, 
     tr.isAccepting, 
     tr.configurationHashFn, tr.configurationEqFn);

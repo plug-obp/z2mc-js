@@ -83,13 +83,13 @@ function dispatch(stack, object) {
 
 
 // 3. instanciate the traversal with the evaluation semantics
-function interpreter(initial, next, hashFn, equalityFn) {
+async function interpreter(initial, next, hashFn, equalityFn) {
     let known1      = new LinearScanHashSet(1024, hashFn, equalityFn, false);
     let stack1      = new UnboundedStack(1024, 2);
     return dfs(initial, next, known1, stack1);
 }
 
-function dfs(initial, next, known1, stack1) {
+async function dfs(initial, next, known1, stack1) {
     function addIfAbsent(n, nc) {
         return known1.add(nc);
     }
@@ -111,14 +111,14 @@ function dfs(initial, next, known1, stack1) {
         stack:   [],
         cc: 0, 
     };
-    let {stack, cc} = dataless_dfs_traversal(
+    let {stack, cc} = await dataless_dfs_traversal(
         initial, next, (c)=>c,
         on_entry, on_known, on_exit, memory, 
         addIfAbsent, stack1);
     return memory;
 }
 
-let re = interpreter(initial, next, hashFn, equalityFn);
+let re = await interpreter(initial, next, hashFn, equalityFn);
 console.log(re.stack);
 
 //TODO: comment attacher l'evaluation comme fanout de l'etat de l'interpreteur... pour construire une STR
