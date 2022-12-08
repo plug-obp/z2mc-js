@@ -74,3 +74,16 @@ got = JSON.stringify(result);
 console.log("test 3", expected == got);
 console.log(result);
 console.log(JSON.stringify(result));
+
+tr.isAccepting = (c) => c === 1;
+
+result = ndfs_gs09_cdlp05(
+    tr.initial(), tr.next, (c)=>c, 
+    tr.isAccepting, 
+    tr.configurationHashFn, tr.configurationEqFn);
+
+expected = '{"verified":false,"trace":[1,2,3,1],"configuration_count":3}';
+got = JSON.stringify(result);
+console.log("test 4", expected == got);
+console.log(result);
+console.log(JSON.stringify(result));
