@@ -87,11 +87,11 @@ async function bfs_dataless_predicate_mc(tr, canonize = (n)=> n, acceptingPredic
         trace.push(parent);
         parent = parents.get(parent);
     }
-    return trace;
+    return trace.reverse();
 }
 
 async function dfs_dataless_predicate_mc(tr, canonize = (n)=> n, acceptingPredicate, known, stack) {
-    let initial = tr.initial();
+    let initial = await tr.initial();
     let next    = (c) => tr.next(c);
 
     async function on_entry(s,n,cn,mem) {
