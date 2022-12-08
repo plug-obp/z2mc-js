@@ -74,7 +74,7 @@ async function dfs_blue(initial, next, canonize, acceptingPredicate, known, stac
         if (value_n.color !== Symbol.for('cyan')) return false;
         //n is on the stack, check if there is an accepting state between s and n
         const value_s = known.get(stack_blue.peek().canonical);
-        if (value_s.weight - value_n.weight != 0) {
+        if (value_s.weight - value_n.weight != 0 || acceptingPredicate(s) || acceptingPredicate(n)) {
             m.holds = false;
             m.witness = n;
             m.trace = stack_blue.map(e => e.configuration).slice(1);
