@@ -66,7 +66,7 @@ async function dataless_dfs_traversal (
         } 
         
         stack.pop();
-
+        if (frame.configuration == null) continue;
         const terminate = await on_exit(frame.configuration, frame, memory);
         if (terminate) return memory;
     }
