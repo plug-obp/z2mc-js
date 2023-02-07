@@ -87,3 +87,18 @@ got = JSON.stringify(result);
 console.log("test 4", expected == got);
 console.log(result);
 console.log(JSON.stringify(result));
+
+tr.isAccepting = (c) => { if(c==null) throw Error('is accepting called with null configuration'); return false; }
+
+result = await ndfs_gs09_cdlp05(
+    tr.initial(), tr.next, (c)=>c, 
+    tr.isAccepting, 
+    tr.configurationHashFn, tr.configurationEqFn);
+
+expected = '{"verified":true,"trace":[],"configuration_count":5}';
+got = JSON.stringify(result);
+console.log("test 4", expected == got);
+console.log(result);
+console.log(JSON.stringify(result));
+
+
