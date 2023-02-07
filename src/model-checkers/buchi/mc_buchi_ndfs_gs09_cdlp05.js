@@ -68,13 +68,13 @@ async function dfs_blue(initial, next, canonize, acceptingPredicate, known, stac
         return false;
     }
 
-    function hasLoop(s, n, cn, m) {
+    async function hasLoop(s, n, cn, m) {
         const value_n = known.get(cn);
         // if n is not on the stack continue;
         if (value_n.color !== Symbol.for('cyan')) return false;
         //n is on the stack, check if there is an accepting state between s and n
-        const value_s = known.get(stack_blue.peek().canonical);
-        if (value_s.weight - value_n.weight != 0 || acceptingPredicate(s) || acceptingPredicate(n)) {
+        const value_s = known.get(stack_blue.peek().canonical); 
+        if (value_s.weight - value_n.weight != 0 || await acceptingPredicate(s) || await acceptingPredicate(n)) {
             m.holds = false;
             m.witness = n;
             m.trace = stack_blue.map(e => e.configuration).slice(1);
@@ -93,8 +93,8 @@ async function dfs_blue(initial, next, canonize, acceptingPredicate, known, stac
         return false;
     }
 
-    function on_known(s, n, cn, m) {
-        if (hasLoop(s, n, cn, m)) return true;
+    async function on_known(s, n, cn, m) {
+        if (await hasLoop(s, n, cn, m)) return true;
         //if (n) is not red,
         //the tell its parent (s) it has at least one non red child
         if (known.get(cn) !== Symbol.for('red')) {
@@ -112,7 +112,7 @@ async function dfs_blue(initial, next, canonize, acceptingPredicate, known, stac
         }
         //if n is an accepting state dfs_red
         if (await acceptingPredicate(n)) {
-            const result = await dfs_red(next(n), next, canonize, known, stack_red);
+            const result = await dfs_red(await next(n), next, canonize, known, stack_red);
             if (result.holds) {
                 known.add(frame.canonical, Symbol.for('red'));
                 return false;

@@ -108,7 +108,7 @@ async function dfs2(seed, next, canonize, known, stack) {
     }
     async function on_entry(s,n,cn,mem) {
         //if seed ∈ next(s) then report violation
-        if (await next(n).find((e) => e === seed)) {
+        if ((await next(n)).find((e) => e === seed)) {
             mem.holds = false;
             mem.witness = seed;
             mem.trace = stack.map(e => e.configuration).slice(1);

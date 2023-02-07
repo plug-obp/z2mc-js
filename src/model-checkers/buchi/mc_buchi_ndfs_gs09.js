@@ -133,7 +133,7 @@ async function dfs_blue(initial, next, canonize, acceptingPredicate, known, stac
         }
         //if n is an accepting state dfs_red
         if (await acceptingPredicate(n)) {
-            const result = await dfs_red(next(n), next, canonize, known, stack_red);
+            const result = await dfs_red(await next(n), next, canonize, known, stack_red);
             if (result.holds) {
                 known.add(frame.canonical, Symbol.for('red'));
                 return false;

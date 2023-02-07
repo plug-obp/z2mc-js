@@ -49,7 +49,7 @@ async function nbfs_naive(initial, next, canonize, acceptingPredicate, hashFn, e
             return false;
         }
         //if a buchi accepting state, look for a cycle
-        const iop = new Proxy(tr, PreInitializedProxyHandler(() => tr.next(c)));  
+        const iop = new Proxy(tr, PreInitializedProxyHandler(async () => await tr.next(c)));  
 
         const predicate = (x) => x === c;
         const result = await bfs_hashset_predicate_mc_full(iop, canonize, predicate, hashFn, equalityFn);
