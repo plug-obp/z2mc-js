@@ -108,8 +108,8 @@ const LinearScanHashSetPrototype = {
 
         //the element is already present
         if (!this.m_isMap) return false;
-        let old = item.value;
-        item.value = value;
+        let old = this.m_items[theIndex].value;
+        this.m_items[theIndex].value = value;
         return old;
     },
 
