@@ -23,7 +23,7 @@
 export {LinearScanHashSet};
 
 /**
- *  ∀ x ∈ α, known ≠ ∅ →             add(known, x) = true ∧ x ∈ known'
+ *  ∀ x ∈ α, known = ∅ →             add(known, x) = true ∧ x ∈ known'
  *  ∀ x ∈ α, known ≠ ∅ → x ∉ known → add(known, x) = true ∧ x ∈ known'
  *  ∀ x ∈ α, known ≠ ∅ → x ∈ known → add(known, x) = false
 */
