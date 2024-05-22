@@ -9,4 +9,4 @@ export { STR2TR
     , ndfs_gs09_cdlp05
     , dfs_hashset_predicate_mc_full
     , bfs_hashset_predicate_mc_full
-    , bfs_hashset_predicate_mc_simple }
+    , bfs_hashset_predicate_mc_simple };
