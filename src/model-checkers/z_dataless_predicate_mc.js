@@ -64,7 +64,7 @@ async function bfs_dataless_predicate_mc(tr, canonize = (n)=> n, acceptingPredic
     let {holds, witness, configuration_count, parents} = await dataless_bfs_traversal(
         initial, next, canonize, 
         on_node, (s,n,cn,m) => false, (s,m) => false, memory,
-        (n, cn) => known.add(cn), frontier)
+        async (n, cn) => await known.add(cn), frontier)
     if (holds) {
         let witnessTrace = getTrace(witness, parents);
         return {verified: false, trace: witnessTrace, configuration_count};
@@ -114,7 +114,7 @@ async function dfs_dataless_predicate_mc(tr, canonize = (n)=> n, acceptingPredic
     let {holds, witness, configuration_count, trace} = await dataless_dfs_traversal(
         initial, next, canonize,
         on_entry, (s,n,cn,m) => false, (s,frame,m) => false, memory, 
-        (n, cn) => known.add(cn), stack);
+        async (n, cn) => await known.add(cn), stack);
     
     return {verified: holds, trace: trace, configuration_count};
 }

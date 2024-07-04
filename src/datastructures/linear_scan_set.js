@@ -29,7 +29,7 @@ export {LinearScanHashSet};
 */
 function LinearScanHashSet(capacity, hashFunction, equalityFunction, isMap) {
     this.m_capacity         = capacity;                     // The capacity of the underlying container
-    this.m_hashFunction     = (c) => Math.abs(hashFunction(c));   // The hash function which will be used
+    this.m_hashFunction     = async (c) => Math.abs(await hashFunction(c));   // The hash function which will be used
     this.m_equalsFunction   = equalityFunction;  // The equality test function, by default identity test
     this.m_maxLoadFactor    = 0.667;                        // The maximum load factor, when this load factor is reached the m_items will grow by m_growthFactor
     this.m_growthFactor     = 2;                            // The growth factor
@@ -59,13 +59,13 @@ const LinearScanHashSetPrototype = {
      * @param {*} key 
      * @returns true if the element was added, false if the element was already in
      */
-    add(key, value=null) {
+    async add(key, value=null) {
         // grow the table if the load factor was reached
         if (this.m_size >= (this.m_capacity * this.m_maxLoadFactor)) {
             this.grow()
         }
 
-        let theHash = this.m_hashFunction(key);
+        let theHash = await this.m_hashFunction(key);
         let theIndex  = theHash % this.m_capacity;
 
         //check for empty slot at index
@@ -77,7 +77,7 @@ const LinearScanHashSetPrototype = {
 
         //check if the element is already present at index
         let item = this.m_items[theIndex];
-        if (this.m_equalsFunction(key, this.m_isMap ? item.key : item)) {
+        if (await this.m_equalsFunction(key, this.m_isMap ? item.key : item)) {
             if (!this.m_isMap) return false;
             let old = item.value;
             item.value = value;
@@ -90,7 +90,7 @@ const LinearScanHashSetPrototype = {
             theIndex = (theIndex + 1) % this.m_capacity;
         } while (
                 this.m_items[theIndex] != null
-            && !this.m_equalsFunction(key, this.m_isMap ? this.m_items[theIndex].key : this.m_items[theIndex])
+            && !await this.m_equalsFunction(key, this.m_isMap ? this.m_items[theIndex].key : this.m_items[theIndex])
             &&  theIndex != start
         );
 
@@ -113,8 +113,8 @@ const LinearScanHashSetPrototype = {
         return old;
     },
 
-    contains(key) {
-        let theHash = this.m_hashFunction(key);
+    async contains(key) {
+        let theHash = await this.m_hashFunction(key);
         let theIndex  = theHash % this.m_capacity;
 
         //check for empty slot at index
@@ -124,7 +124,7 @@ const LinearScanHashSetPrototype = {
 
         //check if the element is already present at index
         let item = this.m_items[theIndex];
-        if (this.m_equalsFunction(key, this.m_isMap ? item.key : item)) {
+        if (await this.m_equalsFunction(key, this.m_isMap ? item.key : item)) {
             return true;
         }
 
@@ -134,7 +134,7 @@ const LinearScanHashSetPrototype = {
             theIndex = (theIndex + 1) % this.m_capacity;
         } while (
                 this.m_items[theIndex] != null
-            && !this.m_equalsFunction(key, this.m_isMap ? this.m_items[theIndex].key : this.m_items[theIndex])
+            && !await this.m_equalsFunction(key, this.m_isMap ? this.m_items[theIndex].key : this.m_items[theIndex])
             &&  theIndex != start
         );
 
@@ -145,8 +145,8 @@ const LinearScanHashSetPrototype = {
         return true;
     },
 
-    get(key) {
-        let theHash = this.m_hashFunction(key);
+    async get(key) {
+        let theHash = await this.m_hashFunction(key);
         let theIndex  = theHash % this.m_capacity;
 
         //check for empty slot at index
@@ -156,7 +156,7 @@ const LinearScanHashSetPrototype = {
 
         //check if the element is already present at index
         let item = this.m_items[theIndex];
-        if (this.m_equalsFunction(key, this.m_isMap ? item.key : item)) {
+        if (await this.m_equalsFunction(key, this.m_isMap ? item.key : item)) {
             return this.m_isMap ? item.value : item;
         }
 
@@ -166,7 +166,7 @@ const LinearScanHashSetPrototype = {
             theIndex = (theIndex + 1) % this.m_capacity;
         } while (
                 this.m_items[theIndex] != null
-            && !this.m_equalsFunction(key, this.m_isMap ? this.m_items[theIndex].key : this.m_items[theIndex])
+            && !await this.m_equalsFunction(key, this.m_isMap ? this.m_items[theIndex].key : this.m_items[theIndex])
             &&  theIndex != start
         );
 
@@ -177,14 +177,14 @@ const LinearScanHashSetPrototype = {
         return this.m_isMap ? this.m_items[theIndex].value : this.m_items[theIndex];
     },
 
-    grow() {
+    async grow() {
         let newCapacity = this.m_capacity * this.m_growthFactor;
         let newArray = new Array(newCapacity);
         //copy and rehash the elements
         for (let i = 0; i<this.m_capacity; i++) {
             let item = this.m_items[i];
             if (item == null) continue;
-            this.internalAddRehash(newArray, item, this.m_hashFunction(this.m_isMap ? item.key : item));
+            this.internalAddRehash(newArray, item, await this.m_hashFunction(this.m_isMap ? item.key : item));
         }
         this.m_capacity = newCapacity;
         this.m_items = newArray;

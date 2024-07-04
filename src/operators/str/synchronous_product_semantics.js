@@ -28,18 +28,18 @@ class StateSynchronousProductSemantics {
         this.rhs = rhs;
     }
 
-    configurationHashFn (configuration) {
+    async configurationHashFn (configuration) {
         let { lc, rc } = configuration;
-        let seed = this.lhs.configurationHashFn(lc);
-        let value = this.rhs.configurationHashFn(rc);
+        let seed = await this.lhs.configurationHashFn(lc);
+        let value = await this.rhs.configurationHashFn(rc);
         seed ^= value + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         return seed;
     }
 
-    configurationEqFn(x, y) {
+    async configurationEqFn(x, y) {
         let { lc:xlc, rc:xrc } = x;
         let { lc:ylc, rc:yrc } = y;
-        return this.lhs.configurationEqFn(xlc, ylc) && this.rhs.configurationEqFn(xrc, yrc);
+        return await this.lhs.configurationEqFn(xlc, ylc) && await this.rhs.configurationEqFn(xrc, yrc);
     };
 
     async initial() {
@@ -102,18 +102,18 @@ class StepSynchronousProductSemantics {
         this.rhs = rhs;
     }
 
-    configurationHashFn (configuration) {
+    async configurationHashFn (configuration) {
         let { lc, rc } = configuration;
-        let seed = this.lhs.configurationHashFn(lc);
-        let value = this.rhs.configurationHashFn(rc);
+        let seed = await this.lhs.configurationHashFn(lc);
+        let value = await this.rhs.configurationHashFn(rc);
         seed ^= value + 0x9e3779b9 + (seed << 6) + (seed >> 2);
         return seed;
     }
 
-    configurationEqFn(x, y) {
+    async configurationEqFn(x, y) {
         let { lc:xlc,rc: xrc } = x;
         let { lc:ylc, rc:yrc } = y;
-        return this.lhs.configurationEqFn(xlc, ylc) && this.rhs.configurationEqFn(xrc, yrc);
+        return await this.lhs.configurationEqFn(xlc, ylc) && await this.rhs.configurationEqFn(xrc, yrc);
     };
 
     async initial() {

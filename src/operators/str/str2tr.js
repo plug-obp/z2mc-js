@@ -26,8 +26,8 @@ class STR2TR {
     constructor(aSTR) {
         this.operand = aSTR;
     }
-    initial() {
-        return this.operand.initial();
+    async initial() {
+        return await this.operand.initial();
     }
     async next(source) {
         let tr_targets = [];
@@ -38,14 +38,14 @@ class STR2TR {
         }
         return tr_targets;
     }
-    isAccepting(c) {
-        return this.operand.isAccepting(c);
+    async isAccepting(c) {
+        return await this.operand.isAccepting(c);
     }
     
-    configurationHashFn(c) {
-        return this.operand.configurationHashFn(c);
+    async configurationHashFn(c) {
+        return await this.operand.configurationHashFn(c);
     }
-    configurationEqFn(a, b){
-        return this.operand.configurationEqFn(a, b);
+    async configurationEqFn(a, b){
+        return await this.operand.configurationEqFn(a, b);
     }
 }
