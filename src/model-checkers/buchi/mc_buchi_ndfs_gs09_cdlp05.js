@@ -60,20 +60,20 @@ async function ndfs_gs09_cdlp05(initial, next, canonize, acceptingPredicate, has
 async function dfs_blue(initial, next, canonize, acceptingPredicate, known, stack_blue, stack_red) {
     //we recurse only if the color is white
     async function addIfAbsent(n,nc) {
-        if (known.get(nc) === null) {
+        if (await known.get(nc) === null) {
             memory.weight += await acceptingPredicate(n) ? 1 : 0;
-            known.add(nc, {color: Symbol.for('cyan'), weight: memory.weight});
+            await known.add(nc, {color: Symbol.for('cyan'), weight: memory.weight});
             return true;
         }
         return false;
     }
 
     async function hasLoop(s, n, cn, m) {
-        const value_n = known.get(cn);
+        const value_n = await known.get(cn);
         // if n is not on the stack continue;
         if (value_n.color !== Symbol.for('cyan')) return false;
         //n is on the stack, check if there is an accepting state between s and n
-        const value_s = known.get(stack_blue.peek().canonical);
+        const value_s = await known.get(stack_blue.peek().canonical);
         if (value_s.weight - value_n.weight != 0 || await acceptingPredicate(s) || await acceptingPredicate(n)) {
             m.holds = false;
             m.witness = n;
@@ -97,7 +97,7 @@ async function dfs_blue(initial, next, canonize, acceptingPredicate, known, stac
         if (await hasLoop(s, n, cn, m)) return true;
         //if (n) is not red,
         //the tell its parent (s) it has at least one non red child
-        if (known.get(cn) !== Symbol.for('red')) {
+        if (await known.get(cn) !== Symbol.for('red')) {
             stack_blue.peek().allRed = false;
         }
         return false;
@@ -107,14 +107,14 @@ async function dfs_blue(initial, next, canonize, acceptingPredicate, known, stac
         m.weight -= await acceptingPredicate(n) ? 1 : 0;
         //if all my children are red, make myself red
         if (frame.allRed === true) {
-            known.add(frame.canonical, Symbol.for('red'));
+            await known.add(frame.canonical, Symbol.for('red'));
             return false;
         }
         //if n is an accepting state dfs_red
         if (await acceptingPredicate(n)) {
             const result = await dfs_red(await next(n), next, canonize, known, stack_red);
             if (result.holds) {
-                known.add(frame.canonical, Symbol.for('red'));
+                await known.add(frame.canonical, Symbol.for('red'));
                 return false;
             }
             //i have a counter example
@@ -125,7 +125,7 @@ async function dfs_blue(initial, next, canonize, acceptingPredicate, known, stac
             m.trace.push(...result.trace);
             return true;
         }
-        known.add(frame.canonical, Symbol.for('blue'));
+        await known.add(frame.canonical, Symbol.for('blue'));
         //if i'm not red, tell my parent that i'm not
         if (stack_blue.isEmpty()) return false;
         const parentFrame = stack_blue.peek();
@@ -150,9 +150,9 @@ async function dfs_blue(initial, next, canonize, acceptingPredicate, known, stac
 
 async function dfs_red(initial, next, canonize, known, stack) {
     //we recurse only if the color is blue
-    function addIfAbsent(n, nc) {
-        if (known.get(nc) === Symbol.for('blue')) {
-            known.add(nc, Symbol.for('red'));
+    async function addIfAbsent(n, nc) {
+        if (await known.get(nc) === Symbol.for('blue')) {
+            await known.add(nc, Symbol.for('red'));
             return true;
         }
         return false;
@@ -164,8 +164,8 @@ async function dfs_red(initial, next, canonize, known, stack) {
         trace: [],
     }
 
-    function on_known(s,n,cn,m) {
-        if (known.get(cn).color === Symbol.for('cyan')) {
+    async function on_known(s,n,cn,m) {
+        if (await known.get(cn).color === Symbol.for('cyan')) {
             m.holds = false;
             m.witness = n;
             m.trace = stack.map(e => e.configuration).slice(1);
