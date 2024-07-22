@@ -51,10 +51,10 @@ async function couv_dfs(initial, next, canonize, acceptingPredicate, known, stac
         cc: 0
     }
 
-    function addIfAbsent(n, nc) {
-        if (known.get(nc) === null) {
+    async function addIfAbsent(n, nc) {
+        if (await known.get(nc) === null) {
             memory.count++;
-            known.add(nc, {dfsnum: memory.count, current: true});
+            await known.add(nc, {dfsnum: memory.count, current: true});
             return true;
         }
         return false;
@@ -68,7 +68,7 @@ async function couv_dfs(initial, next, canonize, acceptingPredicate, known, stac
     }
 
     async function on_known(s, t, tc, m) {
-        const value = known.get(tc);
+        const value = await known.get(tc);
         if (value.current === true) {
             let u;
             let uc;
@@ -89,7 +89,7 @@ async function couv_dfs(initial, next, canonize, acceptingPredicate, known, stac
                         //this may lead to smaller counter examples but requires marking the states that are on the stack
                     return true;
                 }
-            } while (known.get(uc).dfsnum <= value.dfsnum);
+            } while (await known.get(uc).dfsnum <= value.dfsnum);
             roots.push({n: u, nc: uc});
         }
         return false;
@@ -127,7 +127,7 @@ async function couv_dfs(initial, next, canonize, acceptingPredicate, known, stac
 
     //TODO: the remove function could use the dfs instead of recursivity
     async function remove(s, sc) {
-        const value = known.get(sc);
+        const value = await known.get(sc);
         if (value === null || value.current !== true) return;
         value.current = false;
         for (const t of next(s)) {

@@ -67,8 +67,8 @@ async function ndfs_cvwy92_alg2(initial, next, canonize, acceptingPredicate, has
 
 //the first DFS checks the accepting predicate in postorder (on_exit)
 async function dfs1(initial, next, canonize, acceptingPredicate, known1, stack1, known2, stack2) {
-    function addIfAbsent(n, nc) {
-        return known1.add(nc);
+    async function addIfAbsent(n, nc) {
+        return await known1.add(nc);
     }
     async function on_entry(s,n,nc,m) {
         m.cc++;
@@ -103,8 +103,8 @@ async function dfs1(initial, next, canonize, acceptingPredicate, known1, stack1,
 
 //the second DFS checks the accepting predicate in preorder (on_entry)
 async function dfs2(seed, next, canonize, known, stack) {
-    function addIfAbsent(n, nc) {
-        return known.add(nc);
+    async function addIfAbsent(n, nc) {
+        return await known.add(nc);
     }
     async function on_entry(s,n,cn,mem) {
         //if seed ∈ next(s) then report violation
